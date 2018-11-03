@@ -5,8 +5,6 @@
 input = "123 456 1203"
 
 
-
-
 def main():
     answer1 = 0
     answer2 = 0
