@@ -19,14 +19,27 @@ class Ltype(IntEnum):
 
 
 class Token:
-    def __init__(self):
-        self.Ltype = None
-        self.number = 0
-        self.name = ""
+    def __init__(self, Ltype=None, value=None):
+        self._Ltype = Ltype
+        self._value = value
+
+    def get_Ltype(self):
+        return self._Ltype
+
+    def set_Ltype(self, Ltype):
+        self._Ltype = Ltype
+
+    def get_value(self):
+        return self._value
+
+    def set_value(self, value):
+        self._value = value
+
+    Ltype = property(get_Ltype, set_Ltype)
+    value = property(get_value, set_value)
 
 
 def parse_one(prev_ch):
-    token = Token()
     ch = gets() if prev_ch == Ltype.EOF else prev_ch
 
     if ch.isdigit():
@@ -34,20 +47,14 @@ def parse_one(prev_ch):
         while ch.isdigit():
             num = num*10 + int(ch)
             ch = gets()
-
-        token.Ltype = Ltype.NUMBER
-        token.number = num
-        return ch, token
+        return ch, Token(Ltype.NUMBER, num)
 
     elif ch.isalpha():
         word = ""
         while ch.isalpha() or ch.isalnum():
             word += ch
             ch = gets()
-
-        token.Ltype = Ltype.EXECUTABLE_NAME
-        token.name = word
-        return ch, token
+        return ch, Token(Ltype.NUMBER, word)
 
     elif ch == '/':
         word = ch
@@ -55,36 +62,25 @@ def parse_one(prev_ch):
         while ch.isalpha() or ch.isdigit():
             word += ch
             ch = gets()
-
-        token.Ltype = Ltype.LITERAL_NAME
-        token.name = word
-        return ch, token
+        return ch, Token(Ltype.NUMBER, word)
 
     elif ch.isspace():
         while ch.isspace(): ch = gets()
-
-        token.Ltype = Ltype.SPACE
-        return ch, token
+        return ch, Token(Ltype.SPACE)
 
     elif ch == "{":
         ch = gets()
-
-        token.Ltype = Ltype.OPEN_CURLY
-        return ch, token
+        return ch, Token(Ltype.OPEN_CURLY)
 
     elif ch == "}":
         ch = gets()
-
-        token.Ltype = Ltype.CLOSE_CURLY
-        return ch, token
+        return ch, Token(Ltype.CLOSE_CURLY)
 
     elif ch == '\0':
-        token.Ltype = Ltype.END_OF_FILE
-        return ch, token
+        return ch, Token(Ltype.END_OF_FILE)
 
     else:
-        token.Ltype = Ltype.UNKNOWN
-        return Ltype.END_OF_FILE
+        return ch, Token(Ltype.UNKNOWN)
 
 
 def parser_print_all():
@@ -96,7 +92,7 @@ def parser_print_all():
             break
 
         if token.Ltype == Ltype.NUMBER:
-            print(f"num: {token.number}")
+            print(f"num: {token.value}")
         elif token.Ltype == Ltype.SPACE:
             print("space")
         elif token.Ltype == Ltype.OPEN_CURLY:
@@ -104,9 +100,9 @@ def parser_print_all():
         elif token.Ltype == Ltype.CLOSE_CURLY:
             print("close curly brace")
         elif token.Ltype == Ltype.EXECUTABLE_NAME:
-            print(f"executable name: {token.name}")
+            print(f"executable name: {token.value}")
         elif token.Ltype == Ltype.LITERAL_NAME:
-            print(f"literal name {token.name}")
+            print(f"literal name {token.value}")
         else:
             print(f"Unknown type : {token.Ltype}")
 

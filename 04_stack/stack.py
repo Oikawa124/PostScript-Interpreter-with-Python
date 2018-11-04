@@ -13,7 +13,7 @@ class Etype(IntEnum):
     LITERAL_NAME = auto()
     NOT_EXIST = auto()
 
-class ELEMENT:
+class Element:
     def __init__(self):
         self.Etype = None
         self.number = 0
