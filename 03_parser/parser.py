@@ -3,7 +3,7 @@
 # Created by devel on 2018/11/04.
 from enum import IntEnum, auto
 
-from getc import getc
+from gets import gets
 
 
 class Ltype(IntEnum):
@@ -27,18 +27,18 @@ class Token:
 
 def parse_one(prev_ch):
     token = Token()
-    ch = getc() if prev_ch == Ltype.EOF else prev_ch
+    ch = gets() if prev_ch == Ltype.EOF else prev_ch
 
     if ch.isalnum():
         num = 0
         while ch.isalnum():
             num = num*10 + int(ch)
-            ch = getc()
+            ch = gets()
         token.Ltype = Ltype.NUMBER
         token.number = num
         return ch, token
     elif ch.isspace():
-        while ch.isspace(): ch = getc()
+        while ch.isspace(): ch = gets()
 
         token.Ltype = Ltype.SPACE
         token.name = " "

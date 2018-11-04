@@ -5,7 +5,10 @@
 input = "123 456"
 pos = 0
 
-def getc ():
+def gets_set_src(string):
+    input = string
+
+def gets ():
     global pos
     if len(input) == pos:
         return '\0'

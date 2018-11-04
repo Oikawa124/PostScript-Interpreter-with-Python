@@ -3,7 +3,7 @@
 # Created by devel on 2018/11/04.
 from enum import IntEnum, auto
 
-from getc import getc
+from gets import getc
 
 
 class Ltype(IntEnum):
