@@ -6,12 +6,6 @@ from enum import IntEnum, auto
 from gets import gets, gets_set_src
 
 
-class Status(IntEnum):
-    ACTIVE = 1
-    INACTIVE = 0
-    CANCELED = -1
-
-
 class Ltype(IntEnum):
     EOF = -1
     NUMBER = auto()
@@ -85,7 +79,6 @@ def parse_one(prev_ch):
         return ch, token
 
     elif ch == '\0':
-        ch = Ltype.EOF
         token.Ltype = Ltype.END_OF_FILE
         return ch, token
 
@@ -93,8 +86,36 @@ def parse_one(prev_ch):
         token.Ltype = Ltype.UNKNOWN
         return Ltype.END_OF_FILE
 
+
+def parser_print_all():
+    ch = Ltype.EOF
+    while True:
+        ch, token = parse_one(ch)
+
+        if token.Ltype == Ltype.END_OF_FILE:
+            break
+
+        if token.Ltype == Ltype.NUMBER:
+            print(f"num: {token.number}")
+        elif token.Ltype == Ltype.SPACE:
+            print("space")
+        elif token.Ltype == Ltype.OPEN_CURLY:
+            print("open curly brace")
+        elif token.Ltype == Ltype.CLOSE_CURLY:
+            print("close curly brace")
+        elif token.Ltype == Ltype.EXECUTABLE_NAME:
+            print(f"executable name: {token.name}")
+        elif token.Ltype == Ltype.LITERAL_NAME:
+            print(f"literal name {token.name}")
+        else:
+            print(f"Unknown type : {token.Ltype}")
+
+
+
 def main():
-    pass
+    input = "123 23 11"
+    gets_set_src(input)
+    parser_print_all()
 
 
 if __name__ == '__main__':
