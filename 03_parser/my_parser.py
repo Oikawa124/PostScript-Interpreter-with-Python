@@ -35,9 +35,9 @@ def parse_one(prev_ch):
     token = Token()
     ch = gets() if prev_ch == Ltype.EOF else prev_ch
 
-    if ch.isalnum():
+    if ch.isdigit():
         num = 0
-        while ch.isalnum():
+        while ch.isdigit():
             num = num*10 + int(ch)
             ch = gets()
 
@@ -56,9 +56,9 @@ def parse_one(prev_ch):
         return ch, token
 
     elif ch == '/':
-        word = ""
-        ch =gets()
-        while ch.isalpha() or ch.isalnum():
+        word = ch
+        ch = gets()
+        while ch.isalpha() or ch.isdigit():
             word += ch
             ch = gets()
 
@@ -85,8 +85,9 @@ def parse_one(prev_ch):
         return ch, token
 
     elif ch == '\0':
+        ch = Ltype.EOF
         token.Ltype = Ltype.END_OF_FILE
-        return Ltype.END_OF_FILE
+        return ch, token
 
     else:
         token.Ltype = Ltype.UNKNOWN
@@ -98,5 +99,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-#todo パーサーと全ての入力をトークン形式で表示する関数を追加

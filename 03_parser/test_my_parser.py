@@ -16,12 +16,13 @@ def test_parse_one_number():
 
 def test_parse_one_empty_should_return_END_OF_FILE():
     expect = ps.Token()
-    expect.Ltype = ps.Ltype.EOF
+    expect.Ltype = ps.Ltype.END_OF_FILE
 
     ps.gets_set_src("")
     ch, actualToken = ps.parse_one(ps.Ltype.EOF)
 
     assert expect.Ltype == actualToken.Ltype
+    assert ch == ps.Ltype.EOF
 
 test_case = [
     ["abc", "abc"],
@@ -61,7 +62,6 @@ def test_parse_one_open_curly():
     ps.gets_set_src("{")
     ch, actualToken = ps.parse_one(ps.Ltype.EOF)
 
-    assert expect.name == actualToken.name
     assert expect.Ltype == actualToken.Ltype
 
 def test_parse_one_close_curly():
@@ -72,5 +72,4 @@ def test_parse_one_close_curly():
     ps.gets_set_src("}")
     ch, actualToken = ps.parse_one(ps.Ltype.EOF)
 
-    assert expect.name== actualToken.name
     assert expect.Ltype == actualToken.Ltype
