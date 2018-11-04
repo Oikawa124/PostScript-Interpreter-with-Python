@@ -5,8 +5,13 @@
 input = "123 456"
 pos = 0
 
-def get_token_list ():
-    return input.split()
+def getc ():
+    global pos
+    if len(input) == pos:
+        return '\0'
+    ch = input[pos]
+    pos += 1
+    return ch
 
 
 def main():
