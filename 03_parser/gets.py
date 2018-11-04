@@ -6,7 +6,9 @@ input = "123 456"
 pos = 0
 
 def gets_set_src(string):
+    global input
     input = string
+
 
 def gets ():
     global pos

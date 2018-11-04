@@ -3,7 +3,13 @@
 # Created by devel on 2018/11/04.
 from enum import IntEnum, auto
 
-from gets import gets
+from gets import gets, gets_set_src
+
+
+class Status(IntEnum):
+    ACTIVE = 1
+    INACTIVE = 0
+    CANCELED = -1
 
 
 class Ltype(IntEnum):
@@ -47,6 +53,7 @@ def parse_one(prev_ch):
 
 
 def main():
+    gets_set_src("123 416")
     ch1, token1 = parse_one(Ltype.EOF)
     ch2, token2 = parse_one(ch1)
     ch3, token3 = parse_one(ch2)
