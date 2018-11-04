@@ -53,14 +53,8 @@ def parse_one(prev_ch):
 
 
 def main():
-    gets_set_src("123 416")
-    ch1, token1 = parse_one(Ltype.EOF)
-    ch2, token2 = parse_one(ch1)
-    ch3, token3 = parse_one(ch2)
+    pass
 
-    assert (token1.number == 123)
-    assert (token2.name == " ")
-    assert (token3.number == 456)
 
 if __name__ == '__main__':
     main()
