@@ -17,10 +17,3 @@ def gets ():
     ch = input[pos]
     pos += 1
     return ch
-
-
-def main():
-    pass
-
-if __name__ == '__main__':
-    main()
