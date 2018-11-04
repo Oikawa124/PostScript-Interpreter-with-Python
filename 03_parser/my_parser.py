@@ -40,17 +40,57 @@ def parse_one(prev_ch):
         while ch.isalnum():
             num = num*10 + int(ch)
             ch = gets()
+
         token.Ltype = Ltype.NUMBER
         token.number = num
         return ch, token
+
+    elif ch.isalpha():
+        word = ""
+        while ch.isalpha() or ch.isalnum():
+            word += ch
+            ch = gets()
+
+        token.Ltype = Ltype.EXECUTABLE_NAME
+        token.name = word
+        return ch, token
+
+    elif ch == '/':
+        word = ""
+        ch =gets()
+        while ch.isalpha() or ch.isalnum():
+            word += ch
+            ch = gets()
+
+        token.Ltype = Ltype.LITERAL_NAME
+        token.name = word
+        return ch, token
+
     elif ch.isspace():
         while ch.isspace(): ch = gets()
 
         token.Ltype = Ltype.SPACE
-        token.name = " "
         return ch, token
 
+    elif ch == "{":
+        ch = gets()
 
+        token.Ltype = Ltype.OPEN_CURLY
+        return ch, token
+
+    elif ch == "}":
+        ch = gets()
+
+        token.Ltype = Ltype.CLOSE_CURLY
+        return ch, token
+
+    elif ch == '\0':
+        token.Ltype = Ltype.END_OF_FILE
+        return Ltype.END_OF_FILE
+
+    else:
+        token.Ltype = Ltype.UNKNOWN
+        return Ltype.END_OF_FILE
 
 def main():
     pass
@@ -58,3 +98,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+#todo パーサーと全ての入力をトークン形式で表示する関数を追加
