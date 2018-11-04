@@ -14,10 +14,25 @@ class Etype(IntEnum):
     NOT_EXIST = auto()
 
 class Element:
-    def __init__(self):
-        self.Etype = None
-        self.number = 0
-        self.name = ""
+    def __init__(self, etype=None, value=None):
+        self._etype = etype
+        self._value = value
+
+    def get_etype(self):
+        return self._etype
+
+    def set_etype(self, etype):
+        self._etype = etype
+
+    def get_value(self):
+        return self._value
+
+    def set_value(self, value):
+        self._value = value
+
+    etype = property(get_etype, set_etype)
+    value = property(get_value, set_value)
+
 
 class Stack:
     def __init__(self, stack = None):
