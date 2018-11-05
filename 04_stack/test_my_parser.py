@@ -1,28 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/04.
-import my_parser as ps
+from my_parser import Token, Ltype, parse_one, gets_set_src
 
 def test_parse_one_number():
-    expect = ps.Token()
-    expect.number = 123
-    expect.Ltype = ps.Ltype.NUMBER
+    expect = Token(ltype=Ltype.NUMBER, value=123)
 
-    ps.gets_set_src("123")
-    ch, actualToken = ps.parse_one(ps.Ltype.EOF)
+    gets_set_src("123")
+    ch, actualToken = parse_one(Ltype.EOF)
 
-    assert expect.number == actualToken.number
-    assert expect.Ltype == actualToken.Ltype
+    assert expect.value == actualToken.value
+    assert expect.ltype == actualToken.Ltype
 
 def test_parse_one_empty_should_return_END_OF_FILE():
-    expect = ps.Token()
-    expect.Ltype = ps.Ltype.END_OF_FILE
+    expect = Token(ltype=Ltype.END_OF_FILE)
 
-    ps.gets_set_src("")
-    ch, actualToken = ps.parse_one(ps.Ltype.EOF)
+    gets_set_src("")
+    ch, actualToken = parse_one(Ltype.EOF)
 
-    assert expect.Ltype == actualToken.Ltype
-    assert ch == ps.Ltype.EOF
+    assert expect.ltype == actualToken.Ltype
+    assert ch == Ltype.EOF
 
 test_case = [
     ["abc", "abc"],
@@ -33,43 +30,35 @@ test_case = [
 
 for i in test_case:
     def test_parser_one_executable_name():
-        expect = ps.Token()
-        expect.name = i[0]
-        expect.Ltype = ps.Ltype.EXECUTABLE_NAME
+        expect = Token(ltype=Ltype.EXECUTABLE_NAME, value=i[0])
 
-        ps.gets_set_src(i[1])
-        ch, actualToken = ps.parse_one(ps.Ltype.EOF)
+        gets_set_src(i[1])
+        ch, actualToken = parse_one(Ltype.EOF)
 
-        assert expect.name == actualToken.name
-        assert expect.Ltype == actualToken.Ltype
+        assert expect.value == actualToken.value
+        assert expect.ltype == actualToken.Ltype
 
 def test_parse_one_literal_name():
-    expect = ps.Token()
-    expect.name = "/add"
-    expect.Ltype = ps.Ltype.LITERAL_NAME
+    expect = Token(ltype=Ltype.LITERAL_NAME, value="/add")
 
-    ps.gets_set_src("/add")
-    ch, actualToken = ps.parse_one(ps.Ltype.EOF)
+    gets_set_src("/add")
+    ch, actualToken = parse_one(Ltype.EOF)
 
-    assert expect.name == actualToken.name
-    assert expect.Ltype == actualToken.Ltype
+    assert expect.value== actualToken.value
+    assert expect.ltype == actualToken.Ltype
 
 def test_parse_one_open_curly():
-    expect = ps.Token()
-    expect.name = "{"
-    expect.Ltype = ps.Ltype.OPEN_CURLY
+    expect = Token(ltype=Ltype.OPEN_CURLY, value="{")
 
-    ps.gets_set_src("{")
-    ch, actualToken = ps.parse_one(ps.Ltype.EOF)
+    gets_set_src("{")
+    ch, actualToken =parse_one(Ltype.EOF)
 
-    assert expect.Ltype == actualToken.Ltype
+    assert expect.ltype == actualToken.Ltype
 
 def test_parse_one_close_curly():
-    expect = ps.Token()
-    expect.name = "}"
-    expect.Ltype = ps.Ltype.CLOSE_CURLY
+    expect = Token(ltype=Ltype.CLOSE_CURLY, value="}")
 
-    ps.gets_set_src("}")
-    ch, actualToken = ps.parse_one(ps.Ltype.EOF)
+    gets_set_src("}")
+    ch, actualToken = parse_one(Ltype.EOF)
 
-    assert expect.Ltype == actualToken.Ltype
+    assert expect.ltype == actualToken.Ltype

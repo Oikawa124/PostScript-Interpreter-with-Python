@@ -9,10 +9,15 @@ def test_stack_pop_when_stack_has_no_elements():
         stack = Stack()
         stack.pop()
 
-# def test_stack_push_and_pop():
-#     expect_Etype = Etype.NUMBER
-#     expect_value = 3
-#
-#     stack = Stack()
-#     elem = Element()
-#     stack.push()
+def test_stack_push_and_pop():
+    expect = Element(etype=Etype.NUMBER, value=3)
+
+    stack = Stack()
+    elem = Element(etype=Etype.NUMBER, value=3)
+    stack.push(elem)
+
+    actual = stack.pop()
+
+    assert actual.etype == expect.etype
+
+#todo テストを実装していく
