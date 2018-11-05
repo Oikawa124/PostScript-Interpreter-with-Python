@@ -12,8 +12,8 @@ def gets_set_src(string):
 
 def gets ():
     global pos
-    if len(_input) == pos:
-        return '\0'
+    if len(_input) <= pos:
+        return ''
     ch = _input[pos]
     pos += 1
     return ch
