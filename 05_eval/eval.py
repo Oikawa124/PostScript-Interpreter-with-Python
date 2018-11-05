@@ -5,7 +5,7 @@ from my_parser import parse_one, parser_print_all, Token, Ltype, gets_set_src
 from stack import Stack, Element, Etype
 
 
-def eval(stack):
+def eval(stack: Stack):
     ch, token = parse_one('')
 
     def add_op():
@@ -26,7 +26,7 @@ def eval(stack):
         if token.ltype == Ltype.END_OF_FILE: break
 
 def main():
-    _input = "1 1 add"
+    _input = "1 1 1 add add"
     gets_set_src(_input)
     stack = Stack()
     eval(stack)
