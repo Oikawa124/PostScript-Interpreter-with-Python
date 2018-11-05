@@ -37,5 +37,3 @@ def test_stack_push_and_pop_two_time():
 
     assert actual.etype == expect.etype
     assert actual.value == expect.value
-
-#todo テストを実装していく

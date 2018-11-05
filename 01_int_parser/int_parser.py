@@ -2,20 +2,20 @@
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/04.
 
-input = "123 456 1203"
+_input = "123 456 1203"
 pos = 0
 
 def parse_one():
     num = ""
     global pos
 
-    for i in range(pos, len(input)):
-        ch = input[i]
+    for i in range(pos, len(_input)):
+        ch = _input[i]
         pos = i+1
 
         if ch.isalnum():
             num += ch
-        if ch.isspace() or i == len(input)-1:
+        if ch.isspace() or i == len(_input)-1:
             return int(num)
 
 
