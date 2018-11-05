@@ -39,6 +39,8 @@ class Token:
     value = property(get_value, set_value)
 
 
+
+
 def parse_one(prev_ch):
     ch = gets() if prev_ch == Ltype.EOF else prev_ch
 
