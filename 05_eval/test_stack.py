@@ -29,7 +29,7 @@ def test_stack_push_and_pop_two_time():
 
     stack = Stack()
     elem = Element(etype=Etype.NUMBER, value=3)
-    elem2 =  Element(etype=Etype.EXECUTABLE_NAME, value="add")
+    elem2 = Element(etype=Etype.EXECUTABLE_NAME, value="add")
     stack.push(elem)
     stack.push(elem2)
 

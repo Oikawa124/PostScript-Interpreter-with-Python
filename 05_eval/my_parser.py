@@ -42,7 +42,8 @@ class Token:
 
 
 def parse_one(prev_ch):
-    ch = gets() if prev_ch == Ltype.EOF else prev_ch
+    ch = gets() if prev_ch == '' else prev_ch
+    if not ch: return '', Token(ltype=Ltype.END_OF_FILE)
 
     if ch.isdigit():
         num = 0
@@ -56,7 +57,7 @@ def parse_one(prev_ch):
         while ch.isalpha() or ch.isalnum():
             word += ch
             ch = gets()
-        return ch, Token(ltype=Ltype.NUMBER, value=word)
+        return ch, Token(ltype=Ltype.EXECUTABLE_NAME, value=word)
 
     elif ch == '/':
         word = ch
@@ -64,7 +65,7 @@ def parse_one(prev_ch):
         while ch.isalpha() or ch.isdigit():
             word += ch
             ch = gets()
-        return ch, Token(ltype=Ltype.NUMBER, value=word)
+        return ch, Token(ltype=Ltype.LITERAL_NAME, value=word)
 
     elif ch.isspace():
         while ch.isspace(): ch = gets()
@@ -78,7 +79,7 @@ def parse_one(prev_ch):
         ch = gets()
         return ch, Token(ltype=Ltype.CLOSE_CURLY)
 
-    elif ch == '\0':
+    elif not ch:
         return ch, Token(ltype=Ltype.END_OF_FILE)
 
     else:
@@ -86,7 +87,7 @@ def parse_one(prev_ch):
 
 
 def parser_print_all():
-    ch = Ltype.EOF
+    ch = ""
     while True:
         ch, token = parse_one(ch)
 
@@ -111,7 +112,7 @@ def parser_print_all():
 
 
 def main():
-    input = "123 23 11"
+    input = "1 1 add"
     gets_set_src(input)
     parser_print_all()
 
