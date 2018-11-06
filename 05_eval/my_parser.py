@@ -4,7 +4,7 @@
 from enum import IntEnum, auto
 from collections import namedtuple
 
-from gets import gets, gets_set_src
+from gets import gets_set_src
 
 
 class Ltype(IntEnum):
@@ -19,7 +19,6 @@ class Ltype(IntEnum):
     UNKNOWN = auto()
 
 Token = namedtuple("Token", ("ltype", "value"))
-
 
 
 def parse_one(gene):
@@ -77,7 +76,6 @@ def parse_one(gene):
 def main():
     input = "1 1 add"
     gets_set_src(input)
-    parser_print_all()
 
 
 if __name__ == '__main__':

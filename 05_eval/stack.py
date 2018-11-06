@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/05.
 from enum import IntEnum, auto
+from collections import namedtuple
+
 import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -13,25 +15,8 @@ class Etype(IntEnum):
     LITERAL_NAME = auto()
     NOT_EXIST = auto()
 
-class Element:
-    def __init__(self, etype=None, value=None):
-        self._etype = etype
-        self._value = value
 
-    def get_etype(self):
-        return self._etype
-
-    def set_etype(self, etype):
-        self._etype = etype
-
-    def get_value(self):
-        return self._value
-
-    def set_value(self, value):
-        self._value = value
-
-    etype = property(get_etype, set_etype)
-    value = property(get_value, set_value)
+Element = namedtuple("Element", ("Etype", "value"))
 
 
 class Stack:
@@ -50,8 +35,7 @@ class Stack:
         try:
             pop_elem = self.stack.pop()
             return pop_elem
-        except IndexError as ex:
-            logger.error(ex)
+        except IndexError:
             raise
 
     def print_all(self):
