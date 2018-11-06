@@ -197,8 +197,8 @@ def parse_one(gene):
     else:
         return return_token_and_gene(ch, Ltype.UNKNOWN, "UNKNOWN", gene)
 ```
-・returnの処理が分かりにくい
-・ラッパー関数が大げさかもしれない?
+・returnの処理が分かりにくい  
+・ラッパー関数が大げさかもしれない?  
 ・関数に複数の機能を持たせるのは良くないのかもしれない。
 
 ### After
@@ -253,5 +253,77 @@ def parse_one(gene):
     else:
         return Token(Ltype.UNKNOWN, "UNKNOWN"), gene
 ```
-・return 部分が分かりやすくなった。
+・return 部分が分かりやすくなった。  
 ・ヘルパー関数を小さくした。
+
+# stack.py
+
+## Elementの実装
+クラスの実装からnamedtupleへ  
+Tokenと同じような実装
+
+# Stackの実装
+### Before
+```
+class Stack:
+    def __init__(self, stack = None):
+        if type(stack) is type([]):
+            self.stack = stack
+        elif stack is None:
+            self.stack = []
+        else:
+            print("There is Not list type")
+
+    def push(self, elem):
+        self.stack.append(elem)
+
+    def pop(self):
+        try:
+            pop_elem = self.stack.pop()
+            return pop_elem
+        except IndexError as ex:
+            logger.error(ex)
+            raise
+
+    def print_all(self):
+        for i, v in enumerate(self.stack):
+            if v.Etype == Etype.NUMBER:
+                print(f"{i} || Type: {v.Etype}, value: {v.number}")
+            elif v.Etype == Etype.LITERAL_NAME:
+                print(f"{i} || Type: {v.Etype}, value: {v.name}")
+            elif v.Etype == Etype.EXECUTABLE_NAME:
+                print(f"{i} || Type: {v.Etype}, value: {v.name}")
+            else:
+                print("{i} || UNKNOWN")
+```
+
+
+### After
+```
+class Stack:
+    def __init__(self):
+        self.stack = []
+
+    def push(self, elem):
+        self.stack.append(elem)
+
+    def pop(self):
+        try:
+            return self.stack.pop()
+        except IndexError:
+            raise
+
+    def print_all(self):
+        for i, v in enumerate(self.stack):
+            if v.etype == Etype.NUMBER:
+                print(f"{i} || Type: {v.etype}, value: {v.value}")
+            elif v.etype == Etype.LITERAL_NAME:
+                print(f"{i} || Type: {v.etype}, value: {v.value}")
+            elif v.etype == Etype.EXECUTABLE_NAME:
+                print(f"{i} || Type: {v.etype}, value: {v.value}")
+            else:
+                print("{i} || UNKNOWN")
+```
+・Stackの引数にlistを渡す必要がないため削除  
+・pop()のところで、ローカル変数が必要がないために削除  
+・使わない機能を残しておくのは、良くないことだと思う。

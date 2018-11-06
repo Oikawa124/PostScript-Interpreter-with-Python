@@ -4,11 +4,6 @@
 from enum import IntEnum, auto
 from collections import namedtuple
 
-import logging
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-
 class Etype(IntEnum):
     NUMBER = auto()
     EXECUTABLE_NAME = auto()
@@ -20,21 +15,15 @@ Element = namedtuple("Element", ("Etype", "value"))
 
 
 class Stack:
-    def __init__(self, stack = None):
-        if type(stack) is type([]):
-            self.stack = stack
-        elif stack is None:
-            self.stack = []
-        else:
-            print("There is Not list type")
+    def __init__(self):
+        self.stack = []
 
     def push(self, elem):
         self.stack.append(elem)
 
     def pop(self):
         try:
-            pop_elem = self.stack.pop()
-            return pop_elem
+            return self.stack.pop()
         except IndexError:
             raise
 
