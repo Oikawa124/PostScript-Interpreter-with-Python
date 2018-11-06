@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/04.
 from enum import IntEnum, auto
+from collections import namedtuple
 
 from gets import gets, gets_set_src
 
@@ -17,97 +18,59 @@ class Ltype(IntEnum):
     END_OF_FILE = auto()
     UNKNOWN = auto()
 
-
-class Token:
-    def __init__(self, ltype=None, value=None):
-        self._ltype = ltype
-        self._value = value
-
-    def get_ltype(self):
-        return self._ltype
-
-    def set_ltype(self, ltype):
-        self._ltype = ltype
-
-    def get_value(self):
-        return self._value
-
-    def set_value(self, value):
-        self._value = value
-
-    ltype = property(get_ltype, set_ltype)
-    value = property(get_value, set_value)
+Token = namedtuple("Token", ("ltype", "value"))
 
 
 
+def parse_one(gene):
+    # next()のラッパー
+    def next_ch(gene):
+        try:
+            return next(gene)
+        except StopIteration:
+            return ""
 
-def parse_one(prev_ch):
-    ch = gets() if prev_ch == '' else prev_ch
-    if not ch: return '', Token(ltype=Ltype.END_OF_FILE)
+
+    def chain(ch, gene):
+        return (x for g in ([ch], gene) for x in g)
+
+    ch = next_ch(gene)
 
     if ch.isdigit():
-        num = 0
+        num = int(ch)
+        ch = next_ch(gene)
         while ch.isdigit():
-            num = num*10 + int(ch)
-            ch = gets()
-        return ch, Token(ltype=Ltype.NUMBER, value=num)
+            num = num * 10 + int(ch)
+            ch = next_ch(gene)
+        return Token(Ltype.NUMBER, num), chain(ch, gene)
 
     elif ch.isalpha():
-        word = ""
-        while ch.isalpha() or ch.isalnum():
+        word = ch
+        while ch.isalpha():
             word += ch
-            ch = gets()
-        return ch, Token(ltype=Ltype.EXECUTABLE_NAME, value=word)
+            ch = next_ch(ch)
+            return Token(Ltype.EXECUTABLE_NAME, word), chain(ch, gene)
 
     elif ch == '/':
         word = ch
-        ch = gets()
-        while ch.isalpha() or ch.isdigit():
+        while ch.isalpha():
             word += ch
-            ch = gets()
-        return ch, Token(ltype=Ltype.LITERAL_NAME, value=word)
-
-    elif ch.isspace():
-        while ch.isspace(): ch = gets()
-        return ch, Token(ltype=Ltype.SPACE)
+            ch = next_ch(ch)
+        return Token(Ltype.LITERAL_NAME, word), chain(ch, gene)
 
     elif ch == "{":
-        ch = gets()
-        return ch, Token(ltype=Ltype.OPEN_CURLY)
+        return Token(Ltype.OPEN_CURLY, "{"), gene
 
     elif ch == "}":
-        ch = gets()
-        return ch, Token(ltype=Ltype.CLOSE_CURLY)
+        return Token(Ltype.CLOSE_CURLY, "}"), gene
 
-    elif not ch:
-        return ch, Token(ltype=Ltype.END_OF_FILE)
+    elif ch == ' ':
+        return Token(Ltype.SPACE, ' '), gene
 
+    elif ch == "":
+        return Token(Ltype.END_OF_FILE, ""), gene
     else:
-        return ch, Token(ltype=Ltype.UNKNOWN)
-
-
-def parser_print_all():
-    ch = ""
-    while True:
-        ch, token = parse_one(ch)
-
-        if token.ltype == Ltype.END_OF_FILE:
-            break
-
-        if token.ltype == Ltype.NUMBER:
-            print(f"num: {token.value}")
-        elif token.ltype == Ltype.SPACE:
-            print("space")
-        elif token.ltype == Ltype.OPEN_CURLY:
-            print("open curly brace")
-        elif token.ltype == Ltype.CLOSE_CURLY:
-            print("close curly brace")
-        elif token.ltype == Ltype.EXECUTABLE_NAME:
-            print(f"executable name: {token.value}")
-        elif token.Ltype == Ltype.LITERAL_NAME:
-            print(f"literal name {token.value}")
-        else:
-            print(f"Unknown type : {token.ltype}")
+        return Token(Ltype.UNKNOWN, "UNKNOWN"), gene
 
 
 
