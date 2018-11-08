@@ -24,9 +24,11 @@ def to_elems(gene):
         token, words = parse_one(words)
 
 def main():
-    gets_set_src("abc")
-    elem = next_token(to_elems(gets()))
-    print(elem)
+    gets_set_src("abc　def g h 11")
+    elems = to_elems(gets())
+
+    for i in elems:
+        print(i)
 
 if __name__ == '__main__':
     main()

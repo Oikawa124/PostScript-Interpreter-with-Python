@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/05.
-from my_parser import parse_one, Ltype, gets_set_src, gets
-from stack import Stack, Element, Etype
+from element import *
 
 
-def eval(stack: Stack):
-    ch, token = parse_one('')
+def eval(elems, stack: Stack):
 
     def add_op():
         num1 = stack.pop()
@@ -14,25 +12,26 @@ def eval(stack: Stack):
         _sum = num1.value + num2.value
         stack.push(Element(etype=Etype.NUMBER, value=_sum))
 
-    while True:
-        if token.ltype == Ltype.NUMBER:
-            stack.push(Element(etype=Etype.NUMBER, value=token.value))
-        elif token.ltype.EXECUTABLE_NAME:
-            if token.value == "add":
+    for elem in elems:
+        if elem.etype == Etype.NUMBER:
+            stack.push(elem)
+        elif elem.etype == Etype.EXECUTABLE_NAME:
+            if elem.value == "add":
                 add_op()
-
-        ch, token = parse_one(ch)
-
-        if token.ltype == Ltype.END_OF_FILE: break
+            else:
+                stack.push(elem)
+        elif elem.etype == Etype.LITERAL_NAME:
+            stack.push(elem)
+        else:
+            print("Not come here")
 
 def main():
-    _input = "1 1 1 add add"
+    _input = "1 1 add"
     gets_set_src(_input)
     stack = Stack()
-    eval(stack)
-    stack.print_all()
+    eval(to_elems(gets()), stack)
 
-    #todo いままでのことを省みて実装していく。
+    stack.print_all()
 
 
 if __name__ == '__main__':
