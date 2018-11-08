@@ -11,7 +11,7 @@ class Etype(IntEnum):
     NOT_EXIST = auto()
 
 
-Element = namedtuple("Element", ("Etype", "value"))
+Element = namedtuple("Element", ("etype", "value"))
 
 
 class Stack:

@@ -4,23 +4,28 @@
 from my_parser import Ltype, parse_one, gets_set_src, gets
 from stack import *
 
+def next_token(gene):
+    try:
+        next(gene)
+    except StopIteration:
+        raise
 
 def to_elems(gene):
     token, words = parse_one(gene)
 
     while token.ltype != Ltype.END_OF_FILE:
         if token.ltype == Ltype.NUMBER:
-            yield Element(Etype=Etype.NUMBER, value=token.value)
+            yield Element(etype=Etype.NUMBER, value=token.value)
         elif token.ltype == Ltype.EXECUTABLE_NAME:
-            yield Element(Etype=Etype.EXECUTABLE_NAME, value=token.value)
+            yield Element(etype=Etype.EXECUTABLE_NAME, value=token.value)
         elif token.ltype == Ltype.LITERAL_NAME:
-            yield Element(Etype=Etype.LITERAL_NAME, value=token.value)
+            yield Element(etype=Etype.LITERAL_NAME, value=token.value)
 
         token, words = parse_one(words)
 
 def main():
     gets_set_src("abc")
-    elem = next(to_elems(gets()))
+    elem = next_token(to_elems(gets()))
     print(elem)
 
 if __name__ == '__main__':
