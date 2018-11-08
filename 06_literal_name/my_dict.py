@@ -22,7 +22,7 @@ class MyDict:
         if Exist:
             return self.dict[index].value
         else:
-            return False
+            return None
 
     def print_all(self):
         for kv in self.dict:
@@ -30,7 +30,7 @@ class MyDict:
 
     def _find_index(self, key):
         for index in range(len(self.dict)):
-            if self.dict[index].key == key:
+            if self.dict[index].key.value == key.value:
                 return True, index
         return False, None
 

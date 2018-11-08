@@ -23,3 +23,14 @@ def test_eval_dict():
     actual = mydict.get(key)
 
     assert expect.value == actual.value
+
+def test_eval_dict_stack_pop():
+    expect = Element(etype=Etype.NUMBER, value=1)
+
+    stack = Stack()
+    mydict = MyDict()
+    eval(to_elems(gets("/a 1 def a")), stack, mydict)
+
+    actual = stack.pop()
+
+    assert expect.value == actual.value
