@@ -3,7 +3,8 @@
 # Created by devel on 2018/11/08.
 from my_parser import Ltype, parse_one
 from stack import *
-from eval import gets
+# from eval import gets
+
 
 def next_token(gene):
     try:
@@ -24,11 +25,11 @@ def to_elems(gene):
 
         token, words = parse_one(words)
 
-def main():
-    elems = to_elems(gets("abc　def g h 11"))
-
-    for i in elems:
-        print(i)
-
-if __name__ == '__main__':
-    main()
+# def main():
+#     elems = to_elems(gets("abc　def g h 11"))
+#
+#     for i in elems:
+#         print(i)
+#
+# if __name__ == '__main__':
+#     main()
