@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/05.
-from my_parser import parse_one, parser_print_all, Token, Ltype, gets_set_src
+from my_parser import parse_one, Ltype, gets_set_src, gets
 from stack import Stack, Element, Etype
 
 
