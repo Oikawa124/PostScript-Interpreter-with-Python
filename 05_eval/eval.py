@@ -7,7 +7,7 @@ def gets(input_):
     return (x for x in input_)
 
 
-def eval(elems, stack: Stack):
+def eval(elems, stack):
 
     def add_op():
         num1 = stack.pop()
@@ -29,10 +29,8 @@ def eval(elems, stack: Stack):
             print("Not come here")
 
 def main():
-    _input = "1 1 add"
-    gets_set_src(_input)
     stack = Stack()
-    eval(to_elems(gets()), stack)
+    eval(to_elems(gets("1 1 add 1 3 /a")), stack)
 
     stack.print_all()
 

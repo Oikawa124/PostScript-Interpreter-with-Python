@@ -29,11 +29,4 @@ class Stack:
 
     def print_all(self):
         for i, v in enumerate(self.stack):
-            if v.etype == Etype.NUMBER:
-                print(f"{i} || Type: {v.etype}, value: {v.value}")
-            elif v.etype == Etype.LITERAL_NAME:
-                print(f"{i} || Type: {v.etype}, value: {v.value}")
-            elif v.etype == Etype.EXECUTABLE_NAME:
-                print(f"{i} || Type: {v.etype}, value: {v.value}")
-            else:
-                print("{i} || UNKNOWN")
+            print(f"{i}:{v}")
