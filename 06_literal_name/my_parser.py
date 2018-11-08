@@ -51,7 +51,8 @@ def parse_one(gene):
 
     elif ch == '/':
         word = ""
-        while ch.isalpha() or ch == '/':
+        ch = next_ch(gene)
+        while ch.isalpha():
             word += ch
             ch = next_ch(gene)
         return Token(Ltype.LITERAL_NAME, word), chain(ch, gene)

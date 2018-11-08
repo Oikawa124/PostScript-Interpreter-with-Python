@@ -22,7 +22,7 @@ class MyDict:
         if Exist:
             return self.dict[index].value
         else:
-            return None
+            return False
 
     def print_all(self):
         for kv in self.dict:
