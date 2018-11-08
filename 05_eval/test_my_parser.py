@@ -1,25 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/04.
-from my_parser import Token, Ltype, parse_one, gets_set_src
+from my_parser import Token, Ltype, parse_one, gets_set_src, gets
+# こんなimportをしていいのか？
+# my_parserのimportのgetsから持ってきている(import gets でない)
 
 def test_parse_one_number():
     expect = Token(ltype=Ltype.NUMBER, value=123)
 
     gets_set_src("123")
-    ch, actualToken = parse_one('')
+
+    actualToken, gene = parse_one(gets())
 
     assert expect.value == actualToken.value
     assert expect.ltype == actualToken.ltype
 
 def test_parse_one_empty_should_return_END_OF_FILE():
-    expect = Token(ltype=Ltype.END_OF_FILE)
+    expect = Token(ltype=Ltype.END_OF_FILE, value="")
 
     gets_set_src('')
-    ch, actualToken = parse_one('')
+    actualToken, gene = parse_one(gets())
 
     assert expect.ltype == actualToken.ltype
-    assert ch == ''
+    assert expect.value == actualToken.value
 
 test_case = [
     ["abc", "abc"],
@@ -33,7 +36,8 @@ for i in test_case:
         expect = Token(ltype=Ltype.EXECUTABLE_NAME, value=i[0])
 
         gets_set_src(i[1])
-        ch, actualToken = parse_one('')
+        print(i[1])
+        actualToken, gene = parse_one(gets())
 
         assert expect.value == actualToken.value
         assert expect.ltype == actualToken.ltype
@@ -42,7 +46,7 @@ def test_parse_one_literal_name():
     expect = Token(ltype=Ltype.LITERAL_NAME, value="/add")
 
     gets_set_src("/add")
-    ch, actualToken = parse_one('')
+    actualToken, gene = parse_one(gets())
 
     assert expect.value== actualToken.value
     assert expect.ltype == actualToken.ltype
@@ -51,7 +55,7 @@ def test_parse_one_open_curly():
     expect = Token(ltype=Ltype.OPEN_CURLY, value="{")
 
     gets_set_src("{")
-    ch, actualToken =parse_one('')
+    actualToken, gene = parse_one(gets())
 
     assert expect.ltype == actualToken.ltype
 
@@ -59,6 +63,6 @@ def test_parse_one_close_curly():
     expect = Token(ltype=Ltype.CLOSE_CURLY, value="}")
 
     gets_set_src("}")
-    ch, actualToken = parse_one('')
+    actualToken, gene = parse_one(gets())
 
     assert expect.ltype == actualToken.ltype

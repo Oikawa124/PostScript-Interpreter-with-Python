@@ -32,6 +32,8 @@ def main():
     eval(stack)
     stack.print_all()
 
+    #todo いままでのことを省みて実装していく。
+
 
 if __name__ == '__main__':
     main()

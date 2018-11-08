@@ -4,7 +4,7 @@
 from enum import IntEnum, auto
 from collections import namedtuple
 
-from gets import gets_set_src
+from gets import gets_set_src, gets
 
 
 class Ltype(IntEnum):
@@ -44,17 +44,17 @@ def parse_one(gene):
         return Token(Ltype.NUMBER, num), chain(ch, gene)
 
     elif ch.isalpha():
-        word = ch
+        word = ""
         while ch.isalpha():
             word += ch
-            ch = next_ch(ch)
-            return Token(Ltype.EXECUTABLE_NAME, word), chain(ch, gene)
+            ch = next_ch(gene)
+        return Token(Ltype.EXECUTABLE_NAME, word), chain(ch, gene)
 
     elif ch == '/':
-        word = ch
-        while ch.isalpha():
+        word = ""
+        while ch.isalpha() or ch == '/':
             word += ch
-            ch = next_ch(ch)
+            ch = next_ch(gene)
         return Token(Ltype.LITERAL_NAME, word), chain(ch, gene)
 
     elif ch == "{":
@@ -74,8 +74,9 @@ def parse_one(gene):
 
 
 def main():
-    input = "1 1 add"
+    input = "add"
     gets_set_src(input)
+    token, gene = parse_one(gets())
 
 
 if __name__ == '__main__':
