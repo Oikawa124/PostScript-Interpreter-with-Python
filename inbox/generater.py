@@ -92,6 +92,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    pass
 
 
 #Token = namedtuple("Token", ("ltype", "name", "number"))

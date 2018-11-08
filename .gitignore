@@ -1,3 +1,4 @@
 /.idea/
 /.cache/
-inbox/
+inbox/generater.py
+inbox/getter_setter.py
