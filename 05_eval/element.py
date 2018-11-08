@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/08.
-from my_parser import Ltype, parse_one, gets_set_src, gets
+from my_parser import Ltype, parse_one
 from stack import *
+from eval import gets
 
 def next_token(gene):
     try:
@@ -24,8 +25,7 @@ def to_elems(gene):
         token, words = parse_one(words)
 
 def main():
-    gets_set_src("abc　def g h 11")
-    elems = to_elems(gets())
+    elems = to_elems(gets("abc　def g h 11"))
 
     for i in elems:
         print(i)

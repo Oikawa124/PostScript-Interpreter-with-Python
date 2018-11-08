@@ -3,6 +3,9 @@
 # Created by devel on 2018/11/05.
 from element import *
 
+def gets(input_):
+    return (x for x in input_)
+
 
 def eval(elems, stack: Stack):
 

@@ -3,8 +3,7 @@
 # Created by devel on 2018/11/04.
 from enum import IntEnum, auto
 from collections import namedtuple
-
-from gets import gets_set_src, gets
+from eval import gets
 
 
 class Ltype(IntEnum):
@@ -74,9 +73,7 @@ def parse_one(gene):
 
 
 def main():
-    input = "add"
-    gets_set_src(input)
-    token, gene = parse_one(gets())
+    token, gene = parse_one(gets("add"))
 
 
 if __name__ == '__main__':
