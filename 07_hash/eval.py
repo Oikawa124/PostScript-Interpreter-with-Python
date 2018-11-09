@@ -45,7 +45,6 @@ def main():
     eval(to_elems(gets("/a 1 def a")), stack, mydict)
 
     mydict.print_all()
-    stack.print_all()
 
 if __name__ == '__main__':
     main()

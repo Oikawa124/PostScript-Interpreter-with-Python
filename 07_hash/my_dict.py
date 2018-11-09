@@ -7,34 +7,67 @@ from collections import namedtuple
 KeyValue = namedtuple("KeyValue", ("key", "value"))
 
 
+def hash(key):
+    value = 0
+    for x in key:
+        value = (value << 3) + ord(x)
+    return value
 
-class MyDict:
-    def __init__(self):
-        self.dict = []
+class Node:
+    def __init__(self, key, value, cp=None):
+        self.key = key
+        self.value = value
+        self.next = cp
 
-    def put(self, keyvalue):
-        Exist, index = self._find_index(keyvalue.key)
-        if Exist:
-            self.dict[index] = keyvalue
+class Hashtable:
+    def __init__(self, func, size):
+        self.size = 0
+        self.hash_size = size
+        self.hash_table = [None] * size
+        self.hash_func = func
+
+    def _hash_func(self, x):
+        return self.hash_func(x) % self.hash_size
+
+    def _search(self, key):
+        n = self._hash_func(key)
+        cp = self.hash_table[n]
+        while cp:
+            if cp.kay == key:
+                return True, cp
+            cp = cp.next
+        return False, n # ハッシュの値が返る
+
+    def search(self, key):
+        x, y  = self._search(key)
+        if x:
+            return y.value
+        return None
+
+    def insert(self, key, value):
+        x, y = self._search(key)
+        if x:
+            y.value = value
         else:
-            self.dict.append(keyvalue)
+            cp = Node(key, value, self.hash_table[y])
+            self.hash_table[y] = cp
+            self.size += 1
+        return value
 
-    def get(self, key):
-        Exist, index = self._find_index(key)
-        if Exist:
-            return self.dict[index].value
-        else:
-            return None
+    def _traverse(self):
+        for cp in self.hash_table:
+            while cp:
+                yield cp.key, cp.value
+                cp = cp.next
 
-    def print_all(self):
-        for kv in self.dict:
-            print(kv)
+    def __str__(self):
+        if self.size == 0:
+            return "Hashtable()"
 
-    def _find_index(self, key):
-        for index in range(len(self.dict)):
-            if self.dict[index].key.value == key.value:
-                return True, index
-        return False, None
+        s = "Hashtable(\n"
+        for key, value in self._traverse():
+            s += f"key: {key}  value:{value}\n"
+        return s + ")"
 
 
 def main():
