@@ -7,9 +7,9 @@ from collections import namedtuple
 KeyValue = namedtuple("KeyValue", ("key", "value"))
 
 
-def hash(key):
+def _hash(key):
     value = 0
-    for x in key:
+    for x in key.value:
         value = (value << 3) + ord(x)
     return value
 
@@ -20,11 +20,11 @@ class Node:
         self.next = cp
 
 class Hashtable:
-    def __init__(self, func, size):
+    def __init__(self):
         self.size = 0
-        self.hash_size = size
-        self.hash_table = [None] * size
-        self.hash_func = func
+        self.hash_size = 1024
+        self.hash_table = [None] * self.hash_size
+        self.hash_func = _hash
 
     def _hash_func(self, x):
         return self.hash_func(x) % self.hash_size
@@ -33,12 +33,12 @@ class Hashtable:
         n = self._hash_func(key)
         cp = self.hash_table[n]
         while cp:
-            if cp.kay == key:
+            if cp.key.value == key.value:
                 return True, cp
             cp = cp.next
         return False, n # ハッシュの値が返る
 
-    def search(self, key):
+    def get(self, key):
         x, y  = self._search(key)
         if x:
             return y.value
@@ -71,7 +71,11 @@ class Hashtable:
 
 
 def main():
-    pass
+    ht = Hashtable()
+    ht.insert("add", "bbb")
+    ht.insert("def", "foreach")
+    print(ht.get("add"))
+    print(ht)
 
 
 if __name__ == '__main__':

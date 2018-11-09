@@ -19,7 +19,7 @@ def eval(elems, stack=None, mydict=None):
     def def_op():
         val = stack.pop()
         key = stack.pop()
-        mydict.put(KeyValue(key, val))
+        mydict.insert(key, val)
 
     for elem in elems:
         if elem.etype == Etype.NUMBER:
@@ -41,10 +41,11 @@ def eval(elems, stack=None, mydict=None):
 
 def main():
     stack = Stack()
-    mydict = MyDict()
+    mydict = Hashtable()
     eval(to_elems(gets("/a 1 def a")), stack, mydict)
 
-    mydict.print_all()
+    print(stack)
+    print(mydict)
 
 if __name__ == '__main__':
     main()
