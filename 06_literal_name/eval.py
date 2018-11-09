@@ -8,6 +8,7 @@ from my_dict import *
 def gets(input_): return (x for x in input_)
 
 
+
 def eval(elems, stack=None, mydict=None):
 
     def add_op():
@@ -19,7 +20,7 @@ def eval(elems, stack=None, mydict=None):
     def def_op():
         val = stack.pop()
         key = stack.pop()
-        mydict.put(KeyValue(key, val))
+        mydict.put(key, val)
 
     for elem in elems:
         if elem.etype == Etype.NUMBER:

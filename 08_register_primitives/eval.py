@@ -8,27 +8,31 @@ from my_dict import *
 def gets(input_): return (x for x in input_)
 
 
+def add_op(stack):
+    num1 = stack.pop()
+    num2 = stack.pop()
+    _sum = num1.value + num2.value
+    stack.push(Element(etype=Etype.NUMBER, value=_sum))
+
+
+def def_op(stack, mydict):
+    val = stack.pop()
+    key = stack.pop()
+    mydict.insert(key, val)
+
+
 def eval(elems, stack=None, mydict=None):
 
-    def add_op():
-        num1 = stack.pop()
-        num2 = stack.pop()
-        _sum = num1.value + num2.value
-        stack.push(Element(etype=Etype.NUMBER, value=_sum))
 
-    def def_op():
-        val = stack.pop()
-        key = stack.pop()
-        mydict.insert(key, val)
 
     for elem in elems:
         if elem.etype == Etype.NUMBER:
             stack.push(elem)
         elif elem.etype == Etype.EXECUTABLE_NAME:
             if elem.value == "add":
-                add_op()
+                add_op(stack)
             elif elem.value == "def":
-                def_op()
+                def_op(stack, mydict)
             elif mydict.get(elem):
                 val = mydict.get(elem)
                 stack.push(val)
@@ -42,7 +46,7 @@ def eval(elems, stack=None, mydict=None):
 def main():
     stack = Stack()
     mydict = Hashtable()
-    eval(to_elems(gets("/a 1 def a")), stack, mydict)
+    eval(to_elems(gets("1 1 add")), stack, mydict)
 
     print(stack)
     print(mydict)
