@@ -27,10 +27,6 @@ class Stack:
         except IndexError:
             raise
 
-    def print_all(self):
-        for i, v in enumerate(self.stack):
-            print(f"{i}:{v}")
-
     def __str__(self):
         if self.stack is None:
             return "Stack()"
