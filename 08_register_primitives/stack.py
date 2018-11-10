@@ -8,6 +8,7 @@ class Etype(IntEnum):
     NUMBER = auto()
     EXECUTABLE_NAME = auto()
     LITERAL_NAME = auto()
+    FUNCTION = auto()
     NOT_EXIST = auto()
 
 

@@ -39,8 +39,8 @@ class Hashtable:
     def get(self, key):
         x, y  = self._search(key)
         if x:
-            return y.value
-        return None
+            return True, y.value
+        return False, None
 
     def insert(self, key, value):
         x, y = self._search(key)
