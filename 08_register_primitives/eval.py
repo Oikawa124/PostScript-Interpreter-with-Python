@@ -3,12 +3,12 @@
 # Created by devel on 2018/11/05.
 from element import *
 from my_dict import *
-from functools import partial
+
 
 def to_char_gen(input_): return (x for x in input_)
 
 
-class Evaluator():
+class Evaluator:
     def __init__(self):
         self.stack = Stack()
         self.dict = Hashtable()
@@ -56,15 +56,14 @@ def register_primitives(stack, mydict):
         )
 
 
-
 def main():
-
     evaluator = Evaluator()
     elems = to_elems(to_char_gen("1 1 add "))
     evaluator.eval(elems)
 
     print(evaluator.stack)
     print(evaluator.dict)
+
 
 if __name__ == '__main__':
     main()
