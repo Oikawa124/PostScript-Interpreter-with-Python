@@ -20,36 +20,38 @@ def def_op(stack, mydict):
     key = stack.pop()
     mydict.insert(key, val)
 
+class Evaluator():
+    def __init__(self):
+        self.stack = Stack()
+        self.dict = Hashtable()
 
-def eval(elems, stack=None, mydict=None):
-
-
-
-    for elem in elems:
-        if elem.etype == Etype.NUMBER:
-            stack.push(elem)
-        elif elem.etype == Etype.EXECUTABLE_NAME:
-            if elem.value == "add":
-                add_op(stack)
-            elif elem.value == "def":
-                def_op(stack, mydict)
-            elif mydict.get(elem):
-                val = mydict.get(elem)
-                stack.push(val)
+    def eval(self, elems):
+        for elem in elems:
+            if elem.etype == Etype.NUMBER:
+                self.stack.push(elem)
+            elif elem.etype == Etype.EXECUTABLE_NAME:
+                if elem.value == "add":
+                    add_op(self.stack)
+                elif elem.value == "def":
+                    def_op(self.stack, self.dict)
+                elif self.dict.get(elem):
+                    val = self.dict.get(elem)
+                    self.stack.push(val)
+                else:
+                    self.stack.push(elem)
+            elif elem.etype == Etype.LITERAL_NAME:
+                self.stack.push(elem)
             else:
-                stack.push(elem)
-        elif elem.etype == Etype.LITERAL_NAME:
-            stack.push(elem)
-        else:
-            print("Not come here")
+                print("Not come here")
 
 def main():
-    stack = Stack()
-    mydict = Hashtable()
-    eval(to_elems(gets("1 1 add")), stack, mydict)
 
-    print(stack)
-    print(mydict)
+    evaluator = Evaluator()
+    elems = to_elems(gets("1 1 add /a 100 def"))
+    evaluator.eval(elems)
+
+    print(evaluator.stack)
+    print(evaluator.dict)
 
 if __name__ == '__main__':
     main()
