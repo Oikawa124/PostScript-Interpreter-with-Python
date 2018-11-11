@@ -9,17 +9,17 @@ def to_char_gen(input_): return (x for x in input_)
 
 
 class Evaluator:
-    def __init__(self):
-        self.stack = Stack()
-        self.dict = Hashtable()
-        register_primitives(self.stack, self.dict)
+    def __init__(self, stack, dict_):
+        self.stack = stack
+        self.dict_ = dict_
+        register_primitives(self.stack, self.dict_)
 
     def eval(self, elems):
         for elem in elems:
             if elem.etype == Etype.NUMBER:
                 self.stack.push(elem)
             elif elem.etype == Etype.EXECUTABLE_NAME:
-                is_exist, dict_value = self.dict.get(elem)
+                is_exist, dict_value = self.dict_.get(elem)
                 if is_exist:
                     if dict_value.etype == Etype.FUNCTION:
                         dict_value.value()
@@ -57,12 +57,14 @@ def register_primitives(stack, mydict):
 
 
 def main():
-    evaluator = Evaluator()
+    stack = Stack()
+    dict_ = Hashtable()
+    evaluator = Evaluator(stack, dict_)
     elems = to_elems(to_char_gen("1 1 add "))
     evaluator.eval(elems)
 
     print(evaluator.stack)
-    print(evaluator.dict)
+    print(evaluator.dict_)
 
 
 if __name__ == '__main__':
