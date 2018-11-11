@@ -28,7 +28,6 @@ def parse_one(gene):
         except StopIteration:
             return ""
 
-
     def chain(ch, gene):
         return (x for g in ([ch], gene) for x in g)
 
@@ -48,6 +47,14 @@ def parse_one(gene):
             word += ch
             ch = next_ch(gene)
         return Token(Ltype.EXECUTABLE_NAME, word), chain(ch, gene)
+
+    elif ch == '-':
+        ch = next_ch(gene)
+        num = 0
+        while ch.isdigit():
+            num = num * 10 + int(ch)
+            ch = next_ch(gene)
+        return Token(Ltype.NUMBER, -num), chain(ch, gene)
 
     elif ch == '/':
         word = ""
