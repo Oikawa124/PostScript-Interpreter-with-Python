@@ -34,11 +34,15 @@ class Evaluator:
 
 
 def register_primitives(stack, mydict):
-    def add_op():
+    def _pre_process():
         num1 = stack.pop()
         num2 = stack.pop()
-        _sum = num1.value + num2.value
-        stack.push(Element(etype=Etype.NUMBER, value=_sum))
+        return num1, num2
+
+    def add_op():
+        num1, num2 = _pre_process()
+        ans = num1.value + num2.value
+        stack.push(Element(etype=Etype.NUMBER, value=ans))
 
     def def_op():
         val = stack.pop()
@@ -46,11 +50,21 @@ def register_primitives(stack, mydict):
         mydict.insert(key, val)
 
     def sub_op():
-       val1 = stack.pop()
-       val2 = stack.pop()
-       stack.push(val1-val2)
+        num1, num2 = _pre_process()
+        ans = num2.value - num1.value
+        stack.push(Element(etype=Etype.NUMBER, value=ans))
 
-    list_ = [add_op, def_op, sub_op]
+    def mul_op():
+        num1, num2 = _pre_process()
+        ans = num1.value * num2.value
+        stack.push(Element(etype=Etype.NUMBER, value=ans))
+
+    def div_op():
+        num1, num2 = _pre_process()
+        ans = num2.value / num1.value
+        stack.push(Element(etype=Etype.NUMBER, value=ans))
+
+    list_ = [add_op, def_op, sub_op, mul_op, div_op]
     for i in list_:
         mydict.insert(
             Element(etype=Etype.EXECUTABLE_NAME, value=f"{i.__name__[:-3]}"),
@@ -60,7 +74,7 @@ def register_primitives(stack, mydict):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("/a 1 def a"))
+    elems = to_elems(to_char_gen("1 1 add"))
     evaluator.eval(elems)
 
     print(evaluator.stack)
