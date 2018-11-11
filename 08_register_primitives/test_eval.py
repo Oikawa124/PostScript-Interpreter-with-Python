@@ -27,8 +27,35 @@ def test_eval_dict_stack_pop():
     expect = Element(etype=Etype.NUMBER, value=1)
 
     evaluator = Evaluator()
-    evaluator.eval(to_elems(to_char_gen("/a 1 def")))
+    evaluator.eval(to_elems(to_char_gen("/a 1 def　a")))
 
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_sub():
+    expect = Element(etype=Etype.NUMBER, value=3)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("4 1 sub")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_mul():
+    expect = Element(etype=Etype.NUMBER, value=3)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("3 1 mul")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_div():
+    expect = Element(etype=Etype.NUMBER, value=3)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("9 3 div")))
     actual = evaluator.stack.pop()
 
     assert expect.value == actual.value
