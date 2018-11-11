@@ -23,6 +23,8 @@ def to_elems(gene):
             yield Element(etype=Etype.LITERAL_NAME, value=token.value)
         elif token.ltype == Ltype.OPEN_CURLY:
             yield Element(etype=Etype.OPEN_CURLY, value=token.value)
+        elif token.ltype == Ltype.CLOSE_CURLY:
+            yield Element(etype=Etype.CLOSE_CURLY, value=token.value)
         token, words = parse_one(words)
 
 # def main():

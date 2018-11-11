@@ -11,6 +11,7 @@ class Etype(IntEnum):
     FUNCTION = auto()
     EXECUTABLE_ARRAY = auto()
     OPEN_CURLY = auto()
+    CLOSE_CURLY = auto()
     NOT_EXIST = auto()
 
 

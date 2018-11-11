@@ -8,7 +8,7 @@ def test_eval_add():
 
     evaluator = Evaluator()
     evaluator.eval(to_elems(to_char_gen("1 1 1 add add")))
-    actual = evaluator.stack.pop()
+    actual = evaluator.stack_ex_arr.pop()
 
     assert expect.value == actual.value
 
@@ -29,7 +29,7 @@ def test_eval_dict_stack_pop():
     evaluator = Evaluator()
     evaluator.eval(to_elems(to_char_gen("/a 1 def　a")))
 
-    actual = evaluator.stack.pop()
+    actual = evaluator.stack_ex_arr.pop()
 
     assert expect.value == actual.value
 
@@ -38,7 +38,7 @@ def test_eval_sub():
 
     evaluator = Evaluator()
     evaluator.eval(to_elems(to_char_gen("4 1 sub")))
-    actual = evaluator.stack.pop()
+    actual = evaluator.stack_ex_arr.pop()
 
     assert expect.value == actual.value
 
@@ -47,7 +47,7 @@ def test_eval_mul():
 
     evaluator = Evaluator()
     evaluator.eval(to_elems(to_char_gen("3 1 mul")))
-    actual = evaluator.stack.pop()
+    actual = evaluator.stack_ex_arr.pop()
 
     assert expect.value == actual.value
 
@@ -56,6 +56,6 @@ def test_eval_div():
 
     evaluator = Evaluator()
     evaluator.eval(to_elems(to_char_gen("9 3 div")))
-    actual = evaluator.stack.pop()
+    actual = evaluator.stack_ex_arr.pop()
 
     assert expect.value == actual.value

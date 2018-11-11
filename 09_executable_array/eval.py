@@ -29,12 +29,33 @@ class Evaluator:
                     self.stack.push(elem)
             elif elem.etype == Etype.LITERAL_NAME:
                 self.stack.push(elem)
-            elif elem.etype == Etype.
+            elif elem.etype == Etype.OPEN_CURLY:
+                stack_val = self.compile_exec_array(elems)
+                self.stack.push(
+                    Element(
+                        etype=Etype.EXECUTABLE_ARRAY,
+                        value=stack_val
+                    )
+                )
             else:
                 print("Not come here")
 
     def compile_exec_array(self, elems):
-
+        stack_ex_arr = Stack()
+        for elem in elems:
+            if elem.etype == Etype.NUMBER:
+                stack_ex_arr.push(elem)
+            elif elem.etype == Etype.EXECUTABLE_NAME:
+                stack_ex_arr.push(elem)
+            elif elem.etype == Etype.LITERAL_NAME:
+                stack_ex_arr.push(elem)
+            elif elem.etype == Etype.OPEN_CURLY:
+                self.compile_exec_array(elems)
+            elif elem.etype == Etype.CLOSE_CURLY:
+                break
+            else:
+                print("Not come here")
+        return stack_ex_arr
 
 
 def register_primitives(stack, mydict):
@@ -78,11 +99,11 @@ def register_primitives(stack, mydict):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("1 1 add"))
+    elems = to_elems(to_char_gen("{1}"))
     evaluator.eval(elems)
 
     print(evaluator.stack)
-    print(evaluator.dict_)
+    # print(evaluator.dict_)
 
 
 if __name__ == '__main__':
