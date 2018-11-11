@@ -35,6 +35,9 @@ class Stack:
         for val in self.stack:
             yield val
 
+    def value_copy(self, index):
+        return self.stack[len(self.stack) - index -1]
+
     def __str__(self):
         if self.stack is None:
             return "Stack()"
