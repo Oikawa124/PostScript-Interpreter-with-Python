@@ -24,7 +24,7 @@ class Evaluator:
                     if dict_value.etype == Etype.FUNCTION:
                         dict_value.value()
                     elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
-                        self.eval(dict_value.value.each())
+                        self.eval(dict_value.value.gene())
                     else:
                         self.stack.push(dict_value)
                 else:

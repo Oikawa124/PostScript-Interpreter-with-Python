@@ -31,7 +31,7 @@ class Stack:
         except IndexError:
             raise
 
-    def each(self):
+    def gene(self): # listの要素を返すジェネレータ
         for val in self.stack:
             yield val
 
