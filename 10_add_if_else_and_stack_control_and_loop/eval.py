@@ -12,7 +12,7 @@ class Evaluator:
     def __init__(self):
         self.stack = Stack()
         self.dict_ = Hashtable()
-        register_primitives(self.stack, self.dict_)
+        register_primitives(self.stack, self.dict_, self)
 
     def eval(self, elems):
         for elem in elems:
@@ -61,7 +61,7 @@ class Evaluator:
 
 
 
-def register_primitives(stack, mydict):
+def register_primitives(stack, mydict, evaluator):
     def _pre_process():
         num1 = stack.pop()
         num2 = stack.pop()
@@ -153,10 +153,49 @@ def register_primitives(stack, mydict):
         index = val.value
         stack.push(stack.value_copy(index))
 
+    def exec_op():
+        proc = stack.pop()
+        evaluator.eval(proc.value.gene())
 
+    def if_op():
+        proc = stack.pop()
+        bool = stack.pop()
 
+        if bool.value:
+            evaluator.eval(proc.value.gene())
 
-    func_list = [add_op,  sub_op, mul_op, div_op,
+    def ifelse_op():
+        proc2 = stack.pop()
+        proc1 = stack.pop()
+        bool = stack.pop()
+
+        if bool.value:
+            evaluator.eval(proc1.value.gene())
+        else:
+            evaluator.eval(proc2.value.gene())
+
+    def repeat_op():
+        proc = stack.pop()
+        n = stack.pop()
+        cnt = n.value
+
+        while cnt:
+            evaluator.eval(proc.value.gene())
+            cnt -= 1
+
+    def while_op():
+        cond = stack.pop()
+        body = stack.pop()
+
+        evaluator.eval(cond.value.gene())
+        val = stack.pop()
+
+        while val.value:
+            evaluator.eval(body.value.gene())
+            evaluator.eval(cond.value.gene())
+            val = stack.pop()
+
+    func_list = [add_op,  sub_op, mul_op, div_op, def_op,
                      eq_op, neq_op, gt_op, ge_op, lt_op, le_op,
                      pop_op, exch_op, dup_op, index_op,
                      exec_op, if_op, ifelse_op, repeat_op, while_op]
@@ -170,11 +209,11 @@ def register_primitives(stack, mydict):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("/a {1} def a"))
+    elems = to_elems(to_char_gen("{1} exec"))
     evaluator.eval(elems)
 
     print(evaluator.stack)
-    # print(evaluator.dict_)
+    #print(evaluator.dict_)
 
 
 if __name__ == '__main__':
