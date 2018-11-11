@@ -135,3 +135,146 @@ def test_eval_exec_arr_nested():
 
     for ex, ac in zip(expect, actual):
         assert ex.value == ac.value
+
+def test_eval_eq():
+    expect = Element(etype=Etype.NUMBER, value=1)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("1 1 eq")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_neq():
+    expect = Element(etype=Etype.NUMBER, value=1)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("1 0 neq")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_gt():
+    expect = Element(etype=Etype.NUMBER, value=1)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("1 0 gt")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_ge():
+    expect1 = Element(etype=Etype.NUMBER, value=1)
+    expect2 = Element(etype=Etype.NUMBER, value=1)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("1 1 ge 1 0 ge")))
+    actual1 = evaluator.stack.pop()
+    actual2 = evaluator.stack.pop()
+
+    assert expect1.value == actual1.value
+    assert expect2.value == actual2.value
+
+def test_eval_lt():
+    expect = Element(etype=Etype.NUMBER, value=1)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("0 3 lt")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_le():
+    expect1 = Element(etype=Etype.NUMBER, value=1)
+    expect2 = Element(etype=Etype.NUMBER, value=1)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("3 3 le 0 4 le")))
+    actual1 = evaluator.stack.pop()
+    actual2 = evaluator.stack.pop()
+
+    assert expect1.value == actual1.value
+    assert expect2.value == actual2.value
+
+def test_eval_pop():
+    expect = Element(etype=Etype.NUMBER, value=1)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("1 10 pop")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_exch():
+    expect = Element(etype=Etype.NUMBER, value=1)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("1 4 exch")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_dup():
+    expect = Element(etype=Etype.NUMBER, value=4)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("1 4 dup")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_index():
+    expect = Element(etype=Etype.NUMBER, value=2)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("1 4 2 5 1 index")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_exec():
+    expect = Element(etype=Etype.NUMBER, value=4)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("{4} exec")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_if():
+    expect = Element(etype=Etype.NUMBER, value=4)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("1 {2 4} if")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_ifelse():
+    expect = Element(etype=Etype.NUMBER, value=4)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("1 {2 4} {3 10} ifelse")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_repeat():
+    expect = Element(etype=Etype.NUMBER, value=3)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("1 2 {1 add} repeat")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+# テスト失敗
+def test_eval_while():
+    expect = Element(etype=Etype.NUMBER, value=4)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen(
+                                        "5 dup {dup 1 gt} {1 sub exch 1 index mul exch} while pop")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value

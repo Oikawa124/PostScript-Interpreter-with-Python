@@ -95,43 +95,44 @@ def register_primitives(stack, mydict, evaluator):
     def eq_op():
         num1, num2 = _pre_process()
         if num1.value == num2.value:
-            return Element(etype=Etype.NUMBER, value=1)
+            stack.push(Element(etype=Etype.NUMBER, value=1))
         else:
-            return Element(etype=Etype.NUMBER, value=0)
+            stack.push(Element(etype=Etype.NUMBER, value=0))
 
     def neq_op():
         num1, num2 = _pre_process()
         if num1.value != num2.value:
-            return Element(etype=Etype.NUMBER, value=1)
+            stack.push(Element(etype=Etype.NUMBER, value=1))
         else:
-            return Element(etype=Etype.NUMBER, value=0)
+            stack.push(Element(etype=Etype.NUMBER, value=0))
 
     def gt_op():
         num1, num2 = _pre_process()
         if num1 < num2:
-            return Element(etype=Etype.NUMBER, value=1)
+            stack.push(Element(etype=Etype.NUMBER, value=1))
         else:
-            return Element(etype=Etype.NUMBER, value=0)
+            stack.push(Element(etype=Etype.NUMBER, value=0))
 
     def ge_op():
         num1, num2 = _pre_process()
         if num1 <= num2:
-            return Element(etype=Etype.NUMBER, value=1)
+            stack.push(Element(etype=Etype.NUMBER, value=1))
         else:
-            return Element(etype=Etype.NUMBER, value=0)
+            stack.push(Element(etype=Etype.NUMBER, value=0))
 
     def lt_op():
         num1, num2 = _pre_process()
         if num1 > num2:
-            return Element(etype=Etype.NUMBER, value=1)
+            stack.push(Element(etype=Etype.NUMBER, value=1))
         else:
-            return Element(etype=Etype.NUMBER, value=0)
+            stack.push(Element(etype=Etype.NUMBER, value=0))
+
     def le_op():
         num1, num2 = _pre_process()
         if num1 >= num2:
-            return Element(etype=Etype.NUMBER, value=1)
+            stack.push(Element(etype=Etype.NUMBER, value=1))
         else:
-            return Element(etype=Etype.NUMBER, value=0)
+            stack.push(Element(etype=Etype.NUMBER, value=0))
 
     def pop_op():
         stack.pop()
@@ -209,7 +210,7 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{1} exec"))
+    elems = to_elems(to_char_gen("1 1 eq"))
     evaluator.eval(elems)
 
     print(evaluator.stack)
