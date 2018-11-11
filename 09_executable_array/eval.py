@@ -29,8 +29,12 @@ class Evaluator:
                     self.stack.push(elem)
             elif elem.etype == Etype.LITERAL_NAME:
                 self.stack.push(elem)
+            elif elem.etype == Etype.
             else:
                 print("Not come here")
+
+    def compile_exec_array(self, elems):
+
 
 
 def register_primitives(stack, mydict):

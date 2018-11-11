@@ -3,7 +3,6 @@
 # Created by devel on 2018/11/08.
 from my_parser import Ltype, parse_one
 from stack import *
-# from eval import gets
 
 
 def next_token(gene):
@@ -22,7 +21,8 @@ def to_elems(gene):
             yield Element(etype=Etype.EXECUTABLE_NAME, value=token.value)
         elif token.ltype == Ltype.LITERAL_NAME:
             yield Element(etype=Etype.LITERAL_NAME, value=token.value)
-
+        elif token.ltype == Ltype.OPEN_CURLY:
+            yield Element(etype=Etype.OPEN_CURLY, value=token.value)
         token, words = parse_one(words)
 
 # def main():

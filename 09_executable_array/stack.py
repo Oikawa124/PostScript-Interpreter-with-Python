@@ -9,6 +9,8 @@ class Etype(IntEnum):
     EXECUTABLE_NAME = auto()
     LITERAL_NAME = auto()
     FUNCTION = auto()
+    EXECUTABLE_ARRAY = auto()
+    OPEN_CURLY = auto()
     NOT_EXIST = auto()
 
 
