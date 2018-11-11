@@ -23,6 +23,8 @@ class Evaluator:
                 if is_exist:
                     if dict_value.etype == Etype.FUNCTION:
                         dict_value.value()
+                    elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
+                        self.eval(dict_value.value.each())
                     else:
                         self.stack.push(dict_value)
                 else:
@@ -99,7 +101,7 @@ def register_primitives(stack, mydict):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{1}"))
+    elems = to_elems(to_char_gen("/a {1} def a"))
     evaluator.eval(elems)
 
     print(evaluator.stack)

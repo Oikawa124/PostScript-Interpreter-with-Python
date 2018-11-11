@@ -31,6 +31,10 @@ class Stack:
         except IndexError:
             raise
 
+    def each(self):
+        for val in self.stack:
+            yield val
+
     def __str__(self):
         if self.stack is None:
             return "Stack()"
