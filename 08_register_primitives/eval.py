@@ -9,9 +9,9 @@ def to_char_gen(input_): return (x for x in input_)
 
 
 class Evaluator:
-    def __init__(self, stack, dict_):
-        self.stack = stack
-        self.dict_ = dict_
+    def __init__(self):
+        self.stack = Stack()
+        self.dict_ = Hashtable()
         register_primitives(self.stack, self.dict_)
 
     def eval(self, elems):
@@ -23,6 +23,8 @@ class Evaluator:
                 if is_exist:
                     if dict_value.etype == Etype.FUNCTION:
                         dict_value.value()
+                    else:
+                        self.stack.push(dict_value)
                 else:
                     self.stack.push(elem)
             elif elem.etype == Etype.LITERAL_NAME:
@@ -32,35 +34,33 @@ class Evaluator:
 
 
 def register_primitives(stack, mydict):
-    def add():
+    def add_op():
         num1 = stack.pop()
         num2 = stack.pop()
         _sum = num1.value + num2.value
         stack.push(Element(etype=Etype.NUMBER, value=_sum))
 
-    def def_():
+    def def_op():
         val = stack.pop()
         key = stack.pop()
         mydict.insert(key, val)
 
-    def sub():
+    def sub_op():
        val1 = stack.pop()
        val2 = stack.pop()
        stack.push(val1-val2)
 
-    list_ = [add, def_, sub]
+    list_ = [add_op, def_op, sub_op]
     for i in list_:
         mydict.insert(
-            Element(etype=Etype.EXECUTABLE_NAME, value=f"{i.__name__}"),
+            Element(etype=Etype.EXECUTABLE_NAME, value=f"{i.__name__[:-3]}"),
             Element(etype=Etype.FUNCTION, value=i)
         )
 
 
 def main():
-    stack = Stack()
-    dict_ = Hashtable()
-    evaluator = Evaluator(stack, dict_)
-    elems = to_elems(to_char_gen("1 1 add "))
+    evaluator = Evaluator()
+    elems = to_elems(to_char_gen("/a 1 def a"))
     evaluator.eval(elems)
 
     print(evaluator.stack)

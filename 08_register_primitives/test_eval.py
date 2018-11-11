@@ -19,7 +19,7 @@ def test_eval_dict():
     evaluator.eval(to_elems(to_char_gen("/a 1 def")))
 
     key = Element(Etype.LITERAL_NAME, "a")
-    actual = evaluator.dict.get(key)
+    actual = evaluator.dict_.get(key)
 
     assert expect.value == actual.value
 
