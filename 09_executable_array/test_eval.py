@@ -108,3 +108,30 @@ def test_eval_exec_arr_executable_name():
 
     assert expect.value == actual.value
 
+def test_eval_exec_arr_add():
+    expect = Element(etype=Etype.NUMBER, value=3)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("1 /a {2 add} def a")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_exec_arr_nested():
+
+    expect = []
+    expect_nums = [1, 2, 4, 6, 5, 3]
+    for i in expect_nums:
+        expect.append(Element(etype=Etype.NUMBER, value=i))
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen(
+        "/ZZ {6} def /YY {4 ZZ 5} def /XX {1 2 YY 3} def XX"
+    )))
+
+    actual = []
+    for i in evaluator.stack.gene():
+        actual.append(i)
+
+    for ex, ac in zip(expect, actual):
+        assert ex.value == ac.value
