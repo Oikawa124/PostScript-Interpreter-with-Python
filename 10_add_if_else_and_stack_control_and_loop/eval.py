@@ -24,7 +24,7 @@ class Evaluator:
                     if dict_value.etype == Etype.FUNCTION:
                         dict_value.value()
                     elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
-                        self.eval(dict_value.value.gene())
+                        self.eval(dict_value.value)
                     else:
                         self.stack.push(dict_value)
                 else:
@@ -39,20 +39,25 @@ class Evaluator:
                         value=stack_val
                     )
                 )
+            elif elem.etype == Etype.EXECUTABLE_ARRAY:
+                self.stack.push(elem)
             else:
                 print("Not come here")
 
     def compile_exec_array(self, elems):
-        stack_ex_arr = Stack()
+        stack_ex_arr = []
         for elem in elems:
             if elem.etype == Etype.NUMBER:
-                stack_ex_arr.push(elem)
+                stack_ex_arr.append(elem)
             elif elem.etype == Etype.EXECUTABLE_NAME:
-                stack_ex_arr.push(elem)
+                stack_ex_arr.append(elem)
             elif elem.etype == Etype.LITERAL_NAME:
-                stack_ex_arr.push(elem)
+                stack_ex_arr.append(elem)
             elif elem.etype == Etype.OPEN_CURLY:
-                self.compile_exec_array(elems)
+                stack = self.compile_exec_array(elems)
+                stack_ex_arr.append(Element(
+                        etype=Etype.EXECUTABLE_ARRAY,
+                        value=stack))
             elif elem.etype == Etype.CLOSE_CURLY:
                 break
             else:
@@ -156,14 +161,14 @@ def register_primitives(stack, mydict, evaluator):
 
     def exec_op():
         proc = stack.pop()
-        evaluator.eval(proc.value.gene())
+        evaluator.eval(proc.value)
 
     def if_op():
         proc = stack.pop()
         bool = stack.pop()
 
         if bool.value:
-            evaluator.eval(proc.value.gene())
+            evaluator.eval(proc.value)
 
     def ifelse_op():
         proc2 = stack.pop()
@@ -210,7 +215,7 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("1 1 eq"))
+    elems = to_elems(to_char_gen("{{1} exec} exec"))
     evaluator.eval(elems)
 
     print(evaluator.stack)
