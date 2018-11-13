@@ -48,7 +48,7 @@ class Evaluator:
             elif elem.etype == Etype.EXECUTABLE_ARRAY:
                 self.stack.push(elem)
             else:
-                print("Not come here")
+                raise Exception("NOT COME HERE")
 
     def compile_exec_array(self, elems):
         stack_ex_arr = []
@@ -70,7 +70,7 @@ class Evaluator:
             elif elem.etype == Etype.CLOSE_CURLY:
                 break
             else:
-                print("Not come here")
+                raise Exception("NOT COME HERE")
         return stack_ex_arr
 
 
