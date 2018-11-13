@@ -61,7 +61,6 @@ class Hashtable:
     def __str__(self):
         if self.size == 0:
             return "Hashtable()"
-
         s = "Hashtable(\n"
         for key, value in self._traverse():
             s += f"key: {key}  value:{value}\n"

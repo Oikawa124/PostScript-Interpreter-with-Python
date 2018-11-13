@@ -1,21 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/05.
-from enum import IntEnum, auto
-from collections import namedtuple
-
-class Etype(IntEnum):
-    NUMBER = auto()
-    EXECUTABLE_NAME = auto()
-    LITERAL_NAME = auto()
-    FUNCTION = auto()
-    EXECUTABLE_ARRAY = auto()
-    OPEN_CURLY = auto()
-    CLOSE_CURLY = auto()
-    NOT_EXIST = auto()
-
-
-Element = namedtuple("Element", ("etype", "value"))
 
 
 class Stack:
@@ -49,12 +34,10 @@ class Stack:
     def debug_print(self):
         if self.stack is None:
             print("Stack()")
-        s = "stack(\n"
         for i, v in enumerate(self.stack):
             if type(v.value) is list:
-                print("################")
+                print("#EXECUTABLE ARRAY#")
                 for j, v in enumerate(v.value):
-
                     print(f"::{j}:{v.value}")
                 print("################")
             else:

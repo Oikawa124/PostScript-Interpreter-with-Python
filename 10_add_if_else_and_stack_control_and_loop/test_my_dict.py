@@ -4,6 +4,7 @@
 from my_dict import *
 from element import *
 
+
 def test_dict_put_one_time():
     expect = Element(etype=Etype.EXECUTABLE_NAME, value="add")
 
@@ -15,6 +16,7 @@ def test_dict_put_one_time():
     is_exit, actual = mydict.get(key)
 
     assert expect.value == actual.value
+
 
 def test_dict_put_same_key():
     expect = Element(etype=Etype.EXECUTABLE_NAME, value="add2")

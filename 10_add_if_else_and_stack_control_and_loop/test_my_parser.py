@@ -4,6 +4,7 @@
 from my_parser import Token, Ltype, parse_one
 from eval import to_char_gen
 
+
 def test_parse_one_number():
     expect = Token(ltype=Ltype.NUMBER, value=123)
 
@@ -12,6 +13,7 @@ def test_parse_one_number():
     assert expect.value == actualToken.value
     assert expect.ltype == actualToken.ltype
 
+
 def test_parse_one_empty_should_return_END_OF_FILE():
     expect = Token(ltype=Ltype.END_OF_FILE, value="")
 
@@ -19,6 +21,7 @@ def test_parse_one_empty_should_return_END_OF_FILE():
 
     assert expect.ltype == actualToken.ltype
     assert expect.value == actualToken.value
+
 
 test_case = [
     ["abc", "abc"],
@@ -36,6 +39,7 @@ for i in test_case:
         assert expect.value == actualToken.value
         assert expect.ltype == actualToken.ltype
 
+
 def test_parse_one_literal_name():
     expect = Token(ltype=Ltype.LITERAL_NAME, value="add")
 
@@ -44,12 +48,14 @@ def test_parse_one_literal_name():
     assert expect.value== actualToken.value
     assert expect.ltype == actualToken.ltype
 
+
 def test_parse_one_open_curly():
     expect = Token(ltype=Ltype.OPEN_CURLY, value="{")
 
     actualToken, gene = parse_one(to_char_gen("{"))
 
     assert expect.ltype == actualToken.ltype
+
 
 def test_parse_one_close_curly():
     expect = Token(ltype=Ltype.CLOSE_CURLY, value="}")

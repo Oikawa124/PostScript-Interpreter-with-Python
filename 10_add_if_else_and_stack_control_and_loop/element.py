@@ -1,8 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/08.
+from enum import IntEnum, auto
+from collections import namedtuple
+
 from my_parser import Ltype, parse_one
-from stack import *
+
+
+class Etype(IntEnum):
+    NUMBER = auto()
+    EXECUTABLE_NAME = auto()
+    LITERAL_NAME = auto()
+    FUNCTION = auto()
+    EXECUTABLE_ARRAY = auto()
+    OPEN_CURLY = auto()
+    CLOSE_CURLY = auto()
+    NOT_EXIST = auto()
+
+
+Element = namedtuple("Element", ("etype", "value"))
 
 
 def next_token(gene):
@@ -10,6 +26,7 @@ def next_token(gene):
         next(gene)
     except StopIteration:
         raise
+
 
 def to_elems(gene):
     token, words = parse_one(gene)

@@ -3,7 +3,9 @@
 # Created by devel on 2018/11/08.
 from element import *
 import pytest
+
 from eval import to_char_gen
+
 
 def test_elem_number():
     expect_elem = Element(Etype.NUMBER, value=123)

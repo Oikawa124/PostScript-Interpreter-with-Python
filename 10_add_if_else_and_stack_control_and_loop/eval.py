@@ -4,8 +4,9 @@
 import operator as op
 from functools import partial
 
-from element import *
-from my_dict import *
+from element import to_elems, Element, Etype
+from my_dict import Hashtable
+from stack import Stack
 
 
 def to_char_gen(input_): return (x for x in input_)
@@ -126,15 +127,15 @@ def register_primitives(stack, mydict, evaluator):
         evaluator.eval(proc.value)
 
     def if_op():
-        proc, bool = _pop_two_elems()
-        if bool.value:
+        proc, bool_ = _pop_two_elems()
+        if bool_.value:
             evaluator.eval(proc.value)
 
     def ifelse_op():
         proc2, proc1 = _pop_two_elems()
-        bool = stack.pop()
+        bool_ = stack.pop()
 
-        if bool.value:
+        if bool_.value:
             evaluator.eval(proc1.value)
         else:
             evaluator.eval(proc2.value)

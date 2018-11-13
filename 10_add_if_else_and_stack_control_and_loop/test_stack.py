@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/05.
 import pytest
-from stack import Stack, Etype, Element
 
+from stack import Stack
+from element import Etype, Element
 
 def test_stack_pop_when_stack_has_no_elements():
     with pytest.raises(IndexError):

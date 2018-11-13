@@ -3,7 +3,6 @@
 # Created by devel on 2018/11/04.
 from enum import IntEnum, auto
 from collections import namedtuple
-# from eval import gets
 
 
 class Ltype(IntEnum):
@@ -16,6 +15,7 @@ class Ltype(IntEnum):
     CLOSE_CURLY = auto()
     END_OF_FILE = auto()
     UNKNOWN = auto()
+
 
 Token = namedtuple("Token", ("ltype", "value"))
 
@@ -77,12 +77,3 @@ def parse_one(gene):
         return Token(Ltype.END_OF_FILE, ""), gene
     else:
         return Token(Ltype.UNKNOWN, "UNKNOWN"), gene
-
-
-
-def main():
-    #token, gene = parse_one(gets("add"))
-    ...
-
-if __name__ == '__main__':
-    main()
