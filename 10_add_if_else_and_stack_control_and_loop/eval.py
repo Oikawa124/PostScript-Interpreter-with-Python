@@ -84,7 +84,8 @@ def register_primitives(stack, mydict, evaluator):
         elem1, elem2 = _pop_two_elems()
 
         ans = binop(elem2.value, elem1.value)
-        ans = ans if type(ans) == bool else int(ans)
+
+        ans = ans if type(ans) != bool else int(ans)
 
         stack.push(Element(etype=Etype.NUMBER, value=ans))
 
@@ -176,12 +177,12 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("1 1 add"))
+    #  dup {dup 1 gt} {1 sub exch 1 index mul exch} while"
+    elems = to_elems(to_char_gen("1 dup {dup 1 ge} exec"))
     evaluator.eval(elems)
 
     print(evaluator.stack)
-    print(evaluator.dict_)
-    # todo ネストしてコンパイルされた実行可能配列に関するテストを書く
+    #print(evaluator.dict_)
 
 
 if __name__ == '__main__':
