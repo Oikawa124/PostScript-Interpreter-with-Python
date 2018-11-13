@@ -46,3 +46,16 @@ class Stack:
             s += f"{i}:{v}\n"
         return s + ")"
 
+    def debug_print(self):
+        if self.stack is None:
+            print("Stack()")
+        s = "stack(\n"
+        for i, v in enumerate(self.stack):
+            if type(v.value) is list:
+                print("################")
+                for j, v in enumerate(v.value):
+
+                    print(f"::{j}:{v.value}")
+                print("################")
+            else:
+                print(f"{i}:{v.value}")

@@ -147,9 +147,10 @@ def register_primitives(stack, mydict, evaluator):
             evaluator.eval(proc.value)
 
     def while_op():
-        cond, body = _pop_two_elems()
+        body, cond = _pop_two_elems()
 
         evaluator.eval(cond.value)
+
         val = stack.pop()
 
         while val.value:
@@ -177,8 +178,7 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    #  dup {dup 1 gt} {1 sub exch 1 index mul exch} while"
-    elems = to_elems(to_char_gen("1 dup {dup 1 ge} exec"))
+    elems = to_elems(to_char_gen("1 1 add"))
     evaluator.eval(elems)
 
     print(evaluator.stack)

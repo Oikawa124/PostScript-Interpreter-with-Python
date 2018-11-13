@@ -284,13 +284,17 @@ def test_eval_repeat():
 
     assert expect.value == actual.value
 
-# テスト失敗
+
 def test_eval_while():
-    expect = Element(etype=Etype.NUMBER, value=4)
+    expect = Element(etype=Etype.NUMBER, value=120)
 
     evaluator = Evaluator()
-    evaluator.eval(to_elems(to_char_gen(
-                                        "5 dup {dup 1 gt} {1 sub exch 1 index mul exch} while")))
+    evaluator.eval(
+        to_elems(
+            to_char_gen("5 dup {dup 1 gt} {1 sub exch 1 index mul exch} while pop")
+        )
+    )
+
     actual = evaluator.stack.pop()
 
     assert expect.value == actual.value
