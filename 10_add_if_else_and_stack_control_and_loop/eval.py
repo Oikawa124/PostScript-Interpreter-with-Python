@@ -36,12 +36,12 @@ class Evaluator:
             elif elem.etype == Etype.LITERAL_NAME:
                 self.stack.push(elem)
             elif elem.etype == Etype.OPEN_CURLY:
-                stack = self.compile_exec_array(elems)
-                if stack:
+                ex_arr = self.compile_exec_array(elems)
+                if ex_arr:
                     self.stack.push(
                         Element(
                             etype=Etype.EXECUTABLE_ARRAY,
-                            value=stack
+                            value=ex_arr
                         )
                     )
                 else:
@@ -52,20 +52,20 @@ class Evaluator:
                 raise Exception("NOT COME HERE")
 
     def compile_exec_array(self, elems):
-        stack_ex_arr = []
+        ex_arr = []
         for elem in elems:
             if elem.etype == Etype.NUMBER:
-                stack_ex_arr.append(elem)
+                ex_arr.append(elem)
             elif elem.etype == Etype.EXECUTABLE_NAME:
-                stack_ex_arr.append(elem)
+                ex_arr.append(elem)
             elif elem.etype == Etype.LITERAL_NAME:
-                stack_ex_arr.append(elem)
+                ex_arr.append(elem)
             elif elem.etype == Etype.OPEN_CURLY:
-                stack = self.compile_exec_array(elems)
-                if stack:
-                    stack_ex_arr.append(Element(
+                ex_arr = self.compile_exec_array(elems)
+                if ex_arr:
+                    ex_arr.append(Element(
                             etype=Etype.EXECUTABLE_ARRAY,
-                            value=stack)
+                            value=ex_arr)
                     )
                 else:
                     raise Exception("NO ELEMENT IN EXECUTABLE_ARRAY")
@@ -73,7 +73,7 @@ class Evaluator:
                 break
             else:
                 raise Exception("NOT COME HERE")
-        return stack_ex_arr
+        return ex_arr
 
 
 def register_primitives(stack, mydict, evaluator):
