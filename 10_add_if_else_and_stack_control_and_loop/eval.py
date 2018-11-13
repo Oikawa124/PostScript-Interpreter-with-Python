@@ -32,13 +32,16 @@ class Evaluator:
             elif elem.etype == Etype.LITERAL_NAME:
                 self.stack.push(elem)
             elif elem.etype == Etype.OPEN_CURLY:
-                stack_val = self.compile_exec_array(elems)
-                self.stack.push(
-                    Element(
-                        etype=Etype.EXECUTABLE_ARRAY,
-                        value=stack_val
+                stack = self.compile_exec_array(elems)
+                if stack:
+                    self.stack.push(
+                        Element(
+                            etype=Etype.EXECUTABLE_ARRAY,
+                            value=stack
+                        )
                     )
-                )
+                else:
+                    raise Exception("NO ELEMENT IN EXECUTABLE_ARRAY")
             elif elem.etype == Etype.EXECUTABLE_ARRAY:
                 self.stack.push(elem)
             else:
@@ -55,9 +58,12 @@ class Evaluator:
                 stack_ex_arr.append(elem)
             elif elem.etype == Etype.OPEN_CURLY:
                 stack = self.compile_exec_array(elems)
-                stack_ex_arr.append(Element(
-                        etype=Etype.EXECUTABLE_ARRAY,
-                        value=stack))
+                if stack:
+                    stack_ex_arr.append(Element(
+                            etype=Etype.EXECUTABLE_ARRAY,
+                            value=stack))
+                else:
+                    raise Exception("NO ELEMENT IN EXECUTABLE_ARRAY")
             elif elem.etype == Etype.CLOSE_CURLY:
                 break
             else:
@@ -157,7 +163,7 @@ def register_primitives(stack, mydict, evaluator):
     def index_op():
         val = stack.pop()
         index = val.value
-        stack.push(stack.value_copy(index))
+        stack.push(stack.seek(index))
 
     def exec_op():
         proc = stack.pop()
@@ -215,11 +221,12 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{{1} exec} exec"))
+    elems = to_elems(to_char_gen("{}"))
     evaluator.eval(elems)
 
     print(evaluator.stack)
     #print(evaluator.dict_)
+    # todo ネストしてコンパイルされた実行可能配列に関するテストを書く
 
 
 if __name__ == '__main__':

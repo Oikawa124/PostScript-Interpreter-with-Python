@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/05.
+import pytest
+
 from eval import *
 
 
@@ -117,6 +119,11 @@ def test_eval_exec_arr_add():
 
     assert expect.value == actual.value
 
+def test_eval_exec_arr_void():
+    with pytest.raises(Exception):
+        evaluator = Evaluator()
+        evaluator.eval(to_elems(to_char_gen("{}")))
+
 def test_eval_exec_arr_nested():
 
     expect = []
@@ -135,6 +142,16 @@ def test_eval_exec_arr_nested():
 
     for ex, ac in zip(expect, actual):
         assert ex.value == ac.value
+
+def test_eval_exec_arr_nested_conpile():
+
+    expect = Element(etype=Etype.NUMBER, value=3)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("{{3} exec} exec")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
 
 def test_eval_eq():
     expect = Element(etype=Etype.NUMBER, value=1)
