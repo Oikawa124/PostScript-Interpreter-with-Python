@@ -65,7 +65,8 @@ class Evaluator:
                 if stack:
                     stack_ex_arr.append(Element(
                             etype=Etype.EXECUTABLE_ARRAY,
-                            value=stack))
+                            value=stack)
+                    )
                 else:
                     raise Exception("NO ELEMENT IN EXECUTABLE_ARRAY")
             elif elem.etype == Etype.CLOSE_CURLY:
