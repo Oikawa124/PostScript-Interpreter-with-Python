@@ -12,9 +12,9 @@ def test_dict_put_one_time():
     value = Element(etype=Etype.EXECUTABLE_NAME, value="add")
     mydict.insert(key, value)
 
-    actual = mydict.get(key)
+    is_exit, actual = mydict.get(key)
 
-    assert expect == actual
+    assert expect.value == actual.value
 
 def test_dict_put_same_key():
     expect = Element(etype=Etype.EXECUTABLE_NAME, value="add2")
@@ -27,6 +27,6 @@ def test_dict_put_same_key():
     mydict.insert(key, value)
     mydict.insert(key, value2)
 
-    actual = mydict.get(key)
+    is_exit, actual = mydict.get(key)
 
     assert expect == actual

@@ -26,12 +26,3 @@ def to_elems(gene):
         elif token.ltype == Ltype.CLOSE_CURLY:
             yield Element(etype=Etype.CLOSE_CURLY, value=token.value)
         token, words = parse_one(words)
-
-# def main():
-#     elems = to_elems(gets("abc　def g h 11"))
-#
-#     for i in elems:
-#         print(i)
-#
-# if __name__ == '__main__':
-#     main()
