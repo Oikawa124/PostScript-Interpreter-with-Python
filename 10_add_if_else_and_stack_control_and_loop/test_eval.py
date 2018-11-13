@@ -23,8 +23,7 @@ def test_eval_dict():
     evaluator.eval(to_elems(to_char_gen("/a 1 def")))
 
     key = Element(Etype.LITERAL_NAME, "a")
-    actual = evaluator.dict_.get(key)
-
+    is_exist, actual = evaluator.dict_.get(key)
     assert expect.value == actual.value
 
 
@@ -291,7 +290,7 @@ def test_eval_while():
 
     evaluator = Evaluator()
     evaluator.eval(to_elems(to_char_gen(
-                                        "5 dup {dup 1 gt} {1 sub exch 1 index mul exch} while pop")))
+                                        "5 dup {dup 1 gt} {1 sub exch 1 index mul exch} while")))
     actual = evaluator.stack.pop()
 
     assert expect.value == actual.value

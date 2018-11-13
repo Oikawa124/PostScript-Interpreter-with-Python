@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/05.
+import operator as op
+from functools import partial
+
 from element import *
 from my_dict import *
 
@@ -71,87 +74,39 @@ class Evaluator:
         return stack_ex_arr
 
 
-
 def register_primitives(stack, mydict, evaluator):
-    def _pre_process():
+    def _pop_two_elems():
         num1 = stack.pop()
         num2 = stack.pop()
         return num1, num2
 
-    def add_op():
-        num1, num2 = _pre_process()
-        ans = num1.value + num2.value
+    def _binary_op(binop):
+        elem1, elem2 = _pop_two_elems()
+
+        ans = binop(elem2.value, elem1.value)
+        ans = ans if type(ans) == bool else int(ans)
+
         stack.push(Element(etype=Etype.NUMBER, value=ans))
+
+    add_ = partial(_binary_op, op.add)
+    sub_ = partial(_binary_op, op.sub)
+    mul_ = partial(_binary_op, op.mul)
+    div_ = partial(_binary_op, op.floordiv)
+    eq_  = partial(_binary_op, op.eq)
+    neq_ = partial(_binary_op, op.ne)
+    gt_  = partial(_binary_op, op.gt)
+    ge_  = partial(_binary_op, op.ge)
+    lt_  = partial(_binary_op, op.lt)
+    le_  = partial(_binary_op, op.le)
 
     def def_op():
-        val = stack.pop()
-        key = stack.pop()
+        val, key = _pop_two_elems()
         mydict.insert(key, val)
 
-    def sub_op():
-        num1, num2 = _pre_process()
-        ans = num2.value - num1.value
-        stack.push(Element(etype=Etype.NUMBER, value=ans))
-
-    def mul_op():
-        num1, num2 = _pre_process()
-        ans = num1.value * num2.value
-        stack.push(Element(etype=Etype.NUMBER, value=ans))
-
-    def div_op():
-        num1, num2 = _pre_process()
-        ans = num2.value / num1.value
-        stack.push(Element(etype=Etype.NUMBER, value=ans))
-
-    def eq_op():
-        num1, num2 = _pre_process()
-        if num1.value == num2.value:
-            stack.push(Element(etype=Etype.NUMBER, value=1))
-        else:
-            stack.push(Element(etype=Etype.NUMBER, value=0))
-
-    def neq_op():
-        num1, num2 = _pre_process()
-        if num1.value != num2.value:
-            stack.push(Element(etype=Etype.NUMBER, value=1))
-        else:
-            stack.push(Element(etype=Etype.NUMBER, value=0))
-
-    def gt_op():
-        num1, num2 = _pre_process()
-        if num1 < num2:
-            stack.push(Element(etype=Etype.NUMBER, value=1))
-        else:
-            stack.push(Element(etype=Etype.NUMBER, value=0))
-
-    def ge_op():
-        num1, num2 = _pre_process()
-        if num1 <= num2:
-            stack.push(Element(etype=Etype.NUMBER, value=1))
-        else:
-            stack.push(Element(etype=Etype.NUMBER, value=0))
-
-    def lt_op():
-        num1, num2 = _pre_process()
-        if num1 > num2:
-            stack.push(Element(etype=Etype.NUMBER, value=1))
-        else:
-            stack.push(Element(etype=Etype.NUMBER, value=0))
-
-    def le_op():
-        num1, num2 = _pre_process()
-        if num1 >= num2:
-            stack.push(Element(etype=Etype.NUMBER, value=1))
-        else:
-            stack.push(Element(etype=Etype.NUMBER, value=0))
-
-    def pop_op():
-        stack.pop()
+    def pop_op(): stack.pop()
 
     def exch_op():
-        val1 = stack.pop()
-        val2 = stack.pop()
-
+        val1, val2 = _pop_two_elems()
         stack.push(val1)
         stack.push(val2)
 
@@ -170,62 +125,62 @@ def register_primitives(stack, mydict, evaluator):
         evaluator.eval(proc.value)
 
     def if_op():
-        proc = stack.pop()
-        bool = stack.pop()
-
+        proc, bool = _pop_two_elems()
         if bool.value:
             evaluator.eval(proc.value)
 
     def ifelse_op():
-        proc2 = stack.pop()
-        proc1 = stack.pop()
+        proc2, proc1 = _pop_two_elems()
         bool = stack.pop()
 
         if bool.value:
-            evaluator.eval(proc1.value.gene())
+            evaluator.eval(proc1.value)
         else:
-            evaluator.eval(proc2.value.gene())
+            evaluator.eval(proc2.value)
 
     def repeat_op():
-        proc = stack.pop()
-        n = stack.pop()
+        proc, n = _pop_two_elems()
         cnt = n.value
 
-        while cnt:
-            evaluator.eval(proc.value.gene())
-            cnt -= 1
+        for _ in range(cnt):
+            evaluator.eval(proc.value)
 
     def while_op():
-        cond = stack.pop()
-        body = stack.pop()
+        cond, body = _pop_two_elems()
 
-        evaluator.eval(cond.value.gene())
+        evaluator.eval(cond.value)
         val = stack.pop()
 
         while val.value:
-            evaluator.eval(body.value.gene())
-            evaluator.eval(cond.value.gene())
+            evaluator.eval(body.value)
+            evaluator.eval(cond.value)
             val = stack.pop()
 
-    func_list = [add_op,  sub_op, mul_op, div_op, def_op,
-                     eq_op, neq_op, gt_op, ge_op, lt_op, le_op,
-                     pop_op, exch_op, dup_op, index_op,
-                     exec_op, if_op, ifelse_op, repeat_op, while_op]
+    func_list = [def_op, pop_op, exch_op, dup_op, index_op,
+                 exec_op, if_op, ifelse_op, repeat_op, while_op]
 
-    for i in func_list:
+    for func in func_list:
         mydict.insert(
-            Element(etype=Etype.EXECUTABLE_NAME, value=f"{i.__name__[:-3]}"),
-            Element(etype=Etype.FUNCTION, value=i)
+            key=Element(etype=Etype.EXECUTABLE_NAME, value=f"{func.__name__[:-3]}"),
+            value=Element(etype=Etype.FUNCTION, value=func)
+        )
+
+    func_list_partial = [v for v in locals().keys() if v.endswith("_")]
+
+    for func in func_list_partial:
+        mydict.insert(
+            key=Element(etype=Etype.EXECUTABLE_NAME, value=f"{func[:-1]}"),
+            value=Element(etype=Etype.FUNCTION, value=eval(func))
         )
 
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{}"))
+    elems = to_elems(to_char_gen("1 1 add"))
     evaluator.eval(elems)
 
     print(evaluator.stack)
-    #print(evaluator.dict_)
+    print(evaluator.dict_)
     # todo ネストしてコンパイルされた実行可能配列に関するテストを書く
 
 
