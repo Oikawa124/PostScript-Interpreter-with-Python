@@ -7,6 +7,7 @@ from functools import partial
 from element import to_elems, Element, Etype
 from my_dict import Hashtable
 from stack import Stack
+from continuation import *
 
 
 def to_char_gen(input_): return (x for x in input_)
@@ -17,6 +18,7 @@ class Evaluator:
         self.stack = Stack()
         self.dict_ = Hashtable()
         register_primitives(self.stack, self.dict_, self)
+        self.co_stack = CoStack()
 
     def eval(self, elems):
         for elem in elems:
@@ -28,7 +30,7 @@ class Evaluator:
                     if dict_value.etype == Etype.FUNCTION:
                         dict_value.value()
                     elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
-                        self.eval(dict_value.value)
+                        self.eval_exec_array(dict_value.value)
                     else:
                         self.stack.push(dict_value)
                 else:
@@ -74,6 +76,37 @@ class Evaluator:
             else:
                 raise Exception("NOT COME HERE")
         return ex_arr
+
+    def eval_exec_array(self, ex_arr):
+        self.co_stack.push(
+            Continuation(
+                exec_array=ex_arr,
+                pc=0
+            )
+        )
+
+        while not self.co_stack.is_empty():
+            cont = self.co_stack.pop()
+            for i in range(cont.pc, len(cont.exec_array)):
+                if cont.exec_array[i].etype == Etype.NUMBER:
+                    self.stack.push(cont.exec_array[i])
+                elif cont.exec_array[i].etype == Etype.EXECUTABLE_ARRAY:
+                    self.co_stack.push(
+                        Continuation(
+                            exec_array=cont.exec_array,
+                            pc=i+1
+                        )
+                    )
+                    self.co_stack.push(
+                        Continuation(
+                            exec_array=cont.exec_array[i].value,
+                            pc=0
+                        )
+                    )
+                    print(cont.exec_array[i])
+                    break
+
+
 
 
 def register_primitives(stack, mydict, evaluator):
@@ -123,46 +156,46 @@ def register_primitives(stack, mydict, evaluator):
         index = val.value
         stack.push(stack.seek(index))
 
-    def exec_op():
-        proc = stack.pop()
-        evaluator.eval(proc.value)
-
-    def if_op():
-        proc, bool_ = _pop_two_elems()
-        if bool_.value:
-            evaluator.eval(proc.value)
-
-    def ifelse_op():
-        proc2, proc1 = _pop_two_elems()
-        bool_ = stack.pop()
-
-        if bool_.value:
-            evaluator.eval(proc1.value)
-        else:
-            evaluator.eval(proc2.value)
-
-    def repeat_op():
-        proc, n = _pop_two_elems()
-        cnt = n.value
-
-        for _ in range(cnt):
-            evaluator.eval(proc.value)
-
-    def while_op():
-        body, cond = _pop_two_elems()
-
-        evaluator.eval(cond.value)
-
-        val = stack.pop()
-
-        while val.value:
-            evaluator.eval(body.value)
-            evaluator.eval(cond.value)
-            val = stack.pop()
-
-    func_list = [def_op, pop_op, exch_op, dup_op, index_op,
-                 exec_op, if_op, ifelse_op, repeat_op, while_op]
-
+    # def exec_op():
+    #     proc = stack.pop()
+    #     evaluator.eval(proc.value)
+    #
+    # def if_op():
+    #     proc, bool_ = _pop_two_elems()
+    #     if bool_.value:
+    #         evaluator.eval(proc.value)
+    #
+    # def ifelse_op():
+    #     proc2, proc1 = _pop_two_elems()
+    #     bool_ = stack.pop()
+    #
+    #     if bool_.value:
+    #         evaluator.eval(proc1.value)
+    #     else:
+    #         evaluator.eval(proc2.value)
+    #
+    # def repeat_op():
+    #     proc, n = _pop_two_elems()
+    #     cnt = n.value
+    #
+    #     for _ in range(cnt):
+    #         evaluator.eval(proc.value)
+    #
+    # def while_op():
+    #     body, cond = _pop_two_elems()
+    #
+    #     evaluator.eval(cond.value)
+    #
+    #     val = stack.pop()
+    #
+    #     while val.value:
+    #         evaluator.eval(body.value)
+    #         evaluator.eval(cond.value)
+    #         val = stack.pop()
+    #
+    # func_list = [def_op, pop_op, exch_op, dup_op, index_op,
+    #              exec_op, if_op, ifelse_op, repeat_op, while_op]
+    func_list = [def_op]
     for func in func_list:
         mydict.insert(
             key=Element(etype=Etype.EXECUTABLE_NAME, value=f"{func.__name__[:-3]}"),
@@ -180,7 +213,7 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("1 1 add"))
+    elems = to_elems(to_char_gen("/a {{1}} def a"))
     evaluator.eval(elems)
 
     print(evaluator.stack)
