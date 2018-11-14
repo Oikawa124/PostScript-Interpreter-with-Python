@@ -19,29 +19,25 @@ class Evaluator:
         self.dict_ = Hashtable()
         register_primitives(self.stack, self.dict_, self)
         self.co_stack = CoStack()
-        self.request_exec_arr = []
 
     def eval(self, elems):
         for elem in elems:
-            if elem.etype == Etype.NUMBER:
+            if elem.etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
                 self.stack.push(elem)
             elif elem.etype == Etype.EXECUTABLE_NAME:
-                is_exist, dict_value = self.dict_.get(elem)
-                if is_exist:
-                    if dict_value.etype == Etype.FUNCTION:
-                        dict_value.value()
-                        if self.request_exec_arr != []:
-                            exec_arr = self.request_exec_arr
-                            self.request_exec_arr = []
-                            self.eval_exec_array(exec_arr)
-                    elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
-                        self.eval_exec_array(dict_value.value)
-                    else:
-                        self.stack.push(dict_value)
+                if elem.value == "exec":
+                    self.eval_exec_array(self.stack.pop().value)
                 else:
-                    self.stack.push(elem)
-            elif elem.etype == Etype.LITERAL_NAME:
-                self.stack.push(elem)
+                    is_exist, dict_value = self.dict_.get(elem)
+                    if is_exist:
+                        if dict_value.etype == Etype.FUNCTION:
+                            dict_value.value()
+                        elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
+                            self.eval_exec_array(dict_value.value)
+                        else:
+                            self.stack.push(dict_value)
+                    else:
+                        self.stack.push(elem)
             elif elem.etype == Etype.OPEN_CURLY:
                 ex_arr = self.compile_exec_array(elems)
                 if ex_arr:
@@ -53,19 +49,13 @@ class Evaluator:
                     )
                 else:
                     raise Exception("NO ELEMENT IN EXECUTABLE_ARRAY")
-            elif elem.etype == Etype.EXECUTABLE_ARRAY:
-                self.stack.push(elem)
             else:
                 raise Exception("NOT COME HERE")
 
     def compile_exec_array(self, elems):
         ex_arr = []
         for elem in elems:
-            if elem.etype == Etype.NUMBER:
-                ex_arr.append(elem)
-            elif elem.etype == Etype.EXECUTABLE_NAME:
-                ex_arr.append(elem)
-            elif elem.etype == Etype.LITERAL_NAME:
+            if elem.etype in {Etype.NUMBER, Etype.EXECUTABLE_NAME, Etype.LITERAL_NAME}:
                 ex_arr.append(elem)
             elif elem.etype == Etype.OPEN_CURLY:
                 rec_ex_arr = self.compile_exec_array(elems)
@@ -83,70 +73,38 @@ class Evaluator:
         return ex_arr
 
     def eval_exec_array(self, ex_arr):
-        self.co_stack.push(
-            Continuation(
-                exec_array=ex_arr,
-                pc=0
-            )
-        )
+        self.co_stack.push((ex_arr, 0))
 
         while not self.co_stack.is_empty():
-            cont = self.co_stack.pop()
+            exec_array, pc = self.co_stack.pop()
 
-            for i in range(cont.pc, len(cont.exec_array)):
-                if cont.exec_array[i].etype == Etype.NUMBER:
-                    self.stack.push(cont.exec_array[i])
-                elif cont.exec_array[i].etype == Etype.EXECUTABLE_NAME:
-                    is_exist, dict_value = self.dict_.get(cont.exec_array[i])
-                    if is_exist:
-                        if dict_value.etype == Etype.FUNCTION:
-                            dict_value.value()
-                            if self.request_exec_arr != []:
-                                self.co_stack.push(
-                                    Continuation(
-                                        exec_array=cont.exec_array,
-                                        pc=i + 1
-                                    )
-                                )
-                                self.co_stack.push(
-                                    Continuation(
-                                        exec_array=self.request_exec_arr,
-                                        pc=0
-                                    )
-                                )
-                                self.request_exec_arr = []
-                                break
-
-                        elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
-                            self.co_stack.push(
-                                Continuation(
-                                    exec_array=cont.exec_array,
-                                    pc=i + 1
-                                )
-                            )
-                            self.co_stack.push(
-                                Continuation(
-                                    exec_array=cont.exec_array[i].value,
-                                    pc=0
-                                )
-                            )
-                            break
-                        else:
-                            self.stack.push(dict_value)
+            for i in range(pc, len(exec_array)):
+                if exec_array[i].etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
+                    self.stack.push(exec_array[i])
+                elif exec_array[i].etype == Etype.EXECUTABLE_NAME:
+                    if exec_array[i].value == "exec":
+                        self.co_stack.push((exec_array, i+1))
+                        self.co_stack.push((self.stack.pop().value, 0))
+                        break
+                    elif exec_array[i].value == "jmp":
+                        pass
+                    elif exec_array[i].value == "jmp_not_if":
+                        pass
+                    # jmp jmp_not_ifを実装する。
                     else:
-                        self.stack.push(cont.exec_array[i])
-                elif cont.exec_array[i].etype == Etype.LITERAL_NAME:
-                    self.stack.push(cont.exec_array[i])
-                elif cont.exec_array[i].etype == Etype.EXECUTABLE_ARRAY:
-                    self.stack.push(cont.exec_array[i])
+                        is_exist, dict_value = self.dict_.get(exec_array[i])
+                        if is_exist:
+                            if dict_value.etype == Etype.FUNCTION:
+                                dict_value.value()
+                            elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
+                                self.co_stack.push((exec_array, i+1))
+                                break
+                            else:
+                                self.stack.push(dict_value)
+                        else:
+                            self.stack.push(exec_array[i])
                 else:
                     raise Exception("NOT COME HERE")
-
-    def request_execute(self, exec_arr):
-        self.request_exec_arr = exec_arr.value
-
-
-
 
 
 def register_primitives(stack, mydict, evaluator):
@@ -196,9 +154,9 @@ def register_primitives(stack, mydict, evaluator):
         index = val.value
         stack.push(stack.seek(index))
 
-    def exec_op():
-        proc = stack.pop()
-        evaluator.request_execute(proc)
+    # def exec_op():
+    #     proc = stack.pop()
+    #     evaluator.request_execute(proc)
 
     # def if_op():
     #     proc, bool_ = _pop_two_elems()
@@ -235,7 +193,7 @@ def register_primitives(stack, mydict, evaluator):
     #
     # func_list = [def_op, pop_op, exch_op, dup_op, index_op,
     #              exec_op, if_op, ifelse_op, repeat_op, while_op]
-    func_list = [def_op, exec_op]
+    func_list = [def_op]
     for func in func_list:
         mydict.insert(
             key=Element(etype=Etype.EXECUTABLE_NAME, value=f"{func.__name__[:-3]}"),
@@ -253,7 +211,7 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{{1} exec 1} exec"))
+    elems = to_elems(to_char_gen("{{1 {1} exec} exec 1 1} exec"))
     evaluator.eval(elems)
 
     evaluator.stack.debug_print()

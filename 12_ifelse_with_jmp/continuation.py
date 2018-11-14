@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/14.
-from collections import namedtuple
 
-Continuation = namedtuple("Continuation", ("exec_array", "pc"))
 
 class CoStack:
     def __init__(self):
@@ -17,13 +15,6 @@ class CoStack:
             return self.stack.pop()
         except IndexError:
             raise
-
-    def gene(self): # listの要素を返すジェネレータ
-        for val in self.stack:
-            yield val
-
-    def seek(self, index):
-        return self.stack[len(self.stack) - index -1]
 
     def is_empty(self):
         if self.stack:
