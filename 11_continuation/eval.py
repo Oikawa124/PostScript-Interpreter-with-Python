@@ -111,6 +111,12 @@ class Evaluator:
                             )
                         )
                         break
+                    elif cont.exec_array[i].value == "jmp":
+                        pass
+                    elif cont.exec_array[i].value == "jmp_not_if":
+                        pass
+                    # jmp jmp_not_ifを実装する。
+
                     else:
                         is_exist, dict_value = self.dict_.get(cont.exec_array[i])
                         if is_exist:
