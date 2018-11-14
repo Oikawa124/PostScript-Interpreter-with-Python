@@ -86,11 +86,40 @@ class Evaluator:
                         self.co_stack.push(exec_array=exec_array, pc=pc+1)
                         self.co_stack.push(exec_array=self.stack.pop().value, pc=0)
                         break
+                    elif exec_array[pc].value == "ifelse":
+                        proc2 = self.stack.pop()
+                        proc1 = self.stack.pop()
+                        bool = self.stack.pop()
+
+                        exec_array_ifelse = [
+                            bool,
+                            Element(etype=Etype.NUMBER, value=5),
+                            Element(etype=Etype.EXECUTABLE_NAME, value="jmp_not_if"),
+                            proc1,
+                            Element(etype=Etype.EXECUTABLE_NAME, value="exec"),
+                            Element(etype=Etype.NUMBER, value=3),
+                            Element(etype=Etype.EXECUTABLE_NAME, value="jmp"),
+                            proc2,
+                            Element(etype=Etype.EXECUTABLE_NAME, value="exec"),
+                        ]
+                        self.co_stack.push(exec_array=exec_array, pc=pc+1)
+                        self.co_stack.push(exec_array=exec_array_ifelse, pc=0)
+                        break
+
                     elif exec_array[pc].value == "jmp":
-                        pass
+                        print(self.stack)
+                        num = self.stack.pop().value
+                        print(num)
+                        pc = pc + num - 1
+                        if pc >= len(exec_array):
+                            break
                     elif exec_array[pc].value == "jmp_not_if":
-                        pass
-                    # jmp jmp_not_ifを実装する。
+                        num = self.stack.pop().value
+                        cond = self.stack.pop().value
+                        if cond == 0:
+                            pc = pc + num - 1
+                        if pc >= len(exec_array):
+                            break
                     else:
                         is_exist, dict_value = self.dict_.get(exec_array[pc])
                         if is_exist:
@@ -212,7 +241,7 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{1 1 add {1}} exec"))
+    elems = to_elems(to_char_gen("{1{1}{2} ifelse} exec"))
     evaluator.eval(elems)
 
     evaluator.stack.debug_print()
