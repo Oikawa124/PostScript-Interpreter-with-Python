@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/14.
-from collections import namedtuple
-Continuation = namedtuple("Continuation", ("exec_array", "pc"))
 
 class CoStack:
     def __init__(self):
         self.stack = []
 
-    def push(self, elem):
-        self.stack.append(elem)
+    def push(self, exec_array, pc):
+        self.stack.append((exec_array, pc))
 
     def pop(self):
         try:

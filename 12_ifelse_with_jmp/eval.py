@@ -73,58 +73,39 @@ class Evaluator:
         return ex_arr
 
     def eval_exec_array(self, ex_arr):
-        self.co_stack.push(
-            Continuation(
-                exec_array=ex_arr,
-                pc=0
-            )
-        )
+        self.co_stack.push(exec_array=ex_arr, pc=0)
 
         while not self.co_stack.is_empty():
             exec_array, pc = self.co_stack.pop()
 
-            for i in range(pc, len(exec_array)):
-                if exec_array[i].etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
-                    self.stack.push(exec_array[i])
-                elif exec_array[i].etype == Etype.EXECUTABLE_NAME:
-                    if exec_array[i].value == "exec":
-                        self.co_stack.push(
-                            Continuation(
-                                exec_array=exec_array,
-                                pc=i+1
-                            )
-                        )
-                        self.co_stack.push(
-                            Continuation(
-                                exec_array=self.stack.pop().value,
-                                pc=0
-                            )
-                        )
+            while pc < len(exec_array):
+                if exec_array[pc].etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
+                    self.stack.push(exec_array[pc])
+                elif exec_array[pc].etype == Etype.EXECUTABLE_NAME:
+                    if exec_array[pc].value == "exec":
+                        self.co_stack.push(exec_array=exec_array, pc=pc+1)
+                        self.co_stack.push(exec_array=self.stack.pop().value, pc=0)
                         break
-                    elif exec_array[i].value == "jmp":
+                    elif exec_array[pc].value == "jmp":
                         pass
-                    elif exec_array[i].value == "jmp_not_if":
+                    elif exec_array[pc].value == "jmp_not_if":
                         pass
                     # jmp jmp_not_ifを実装する。
                     else:
-                        is_exist, dict_value = self.dict_.get(exec_array[i])
+                        is_exist, dict_value = self.dict_.get(exec_array[pc])
                         if is_exist:
                             if dict_value.etype == Etype.FUNCTION:
                                 dict_value.value()
                             elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
-                                self.co_stack.push(
-                                    Continuation(
-                                        exec_array=exec_array,
-                                        pc=i+1
-                                    )
-                                )
+                                self.co_stack.push(exec_array=exec_array, pc=pc+1)
                                 break
                             else:
                                 self.stack.push(dict_value)
                         else:
-                            self.stack.push(exec_array[i])
+                            self.stack.push(exec_array[pc])
                 else:
                     raise Exception("NOT COME HERE")
+                pc += 1
 
 
 def register_primitives(stack, mydict, evaluator):
@@ -231,7 +212,7 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{{1 {1} exec} exec 1 1} exec"))
+    elems = to_elems(to_char_gen("{1 1 add {1}} exec"))
     evaluator.eval(elems)
 
     evaluator.stack.debug_print()
