@@ -73,7 +73,12 @@ class Evaluator:
         return ex_arr
 
     def eval_exec_array(self, ex_arr):
-        self.co_stack.push((ex_arr, 0))
+        self.co_stack.push(
+            Continuation(
+                exec_array=ex_arr,
+                pc=0
+            )
+        )
 
         while not self.co_stack.is_empty():
             exec_array, pc = self.co_stack.pop()
@@ -83,8 +88,18 @@ class Evaluator:
                     self.stack.push(exec_array[i])
                 elif exec_array[i].etype == Etype.EXECUTABLE_NAME:
                     if exec_array[i].value == "exec":
-                        self.co_stack.push((exec_array, i+1))
-                        self.co_stack.push((self.stack.pop().value, 0))
+                        self.co_stack.push(
+                            Continuation(
+                                exec_array=exec_array,
+                                pc=i+1
+                            )
+                        )
+                        self.co_stack.push(
+                            Continuation(
+                                exec_array=self.stack.pop().value,
+                                pc=0
+                            )
+                        )
                         break
                     elif exec_array[i].value == "jmp":
                         pass
@@ -97,7 +112,12 @@ class Evaluator:
                             if dict_value.etype == Etype.FUNCTION:
                                 dict_value.value()
                             elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
-                                self.co_stack.push((exec_array, i+1))
+                                self.co_stack.push(
+                                    Continuation(
+                                        exec_array=exec_array,
+                                        pc=i+1
+                                    )
+                                )
                                 break
                             else:
                                 self.stack.push(dict_value)

@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Created by devel on 2018/11/14.
-
+from collections import namedtuple
+Continuation = namedtuple("Continuation", ("exec_array", "pc"))
 
 class CoStack:
     def __init__(self):
