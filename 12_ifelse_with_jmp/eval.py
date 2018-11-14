@@ -107,9 +107,7 @@ class Evaluator:
                         break
 
                     elif exec_array[pc].value == "jmp":
-                        print(self.stack)
                         num = self.stack.pop().value
-                        print(num)
                         pc = pc + num - 1
                         if pc >= len(exec_array):
                             break
