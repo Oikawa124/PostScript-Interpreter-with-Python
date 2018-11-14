@@ -298,3 +298,13 @@ def test_eval_while():
     actual = evaluator.stack.pop()
 
     assert expect.value == actual.value
+
+def test_eval_exec_arr_nested_action1():
+
+    expect = Element(etype=Etype.NUMBER, value=4)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("{{{3} exec} exec {1} exec add} exec")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value

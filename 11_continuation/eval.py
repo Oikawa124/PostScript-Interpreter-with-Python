@@ -249,7 +249,7 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{{1} exec 1} exec"))
+    elems = to_elems(to_char_gen("{{1 {1} exec} exec 1 1} exec"))
     evaluator.eval(elems)
 
     evaluator.stack.debug_print()
