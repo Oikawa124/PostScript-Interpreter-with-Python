@@ -19,6 +19,7 @@ class Evaluator:
         self.dict_ = Hashtable()
         register_primitives(self.stack, self.dict_, self)
         self.co_stack = CoStack()
+        self.request_exec_arr = []
 
     def eval(self, elems):
         for elem in elems:
@@ -29,6 +30,10 @@ class Evaluator:
                 if is_exist:
                     if dict_value.etype == Etype.FUNCTION:
                         dict_value.value()
+                        if self.request_exec_arr != []:
+                            exec_arr = self.request_exec_arr
+                            self.request_exec_arr = []
+                            self.eval_exec_array(exec_arr)
                     elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
                         self.eval_exec_array(dict_value.value)
                     else:
@@ -87,6 +92,7 @@ class Evaluator:
 
         while not self.co_stack.is_empty():
             cont = self.co_stack.pop()
+
             for i in range(cont.pc, len(cont.exec_array)):
                 if cont.exec_array[i].etype == Etype.NUMBER:
                     self.stack.push(cont.exec_array[i])
@@ -95,6 +101,22 @@ class Evaluator:
                     if is_exist:
                         if dict_value.etype == Etype.FUNCTION:
                             dict_value.value()
+                            if self.request_exec_arr != []:
+                                self.co_stack.push(
+                                    Continuation(
+                                        exec_array=cont.exec_array,
+                                        pc=i + 1
+                                    )
+                                )
+                                self.co_stack.push(
+                                    Continuation(
+                                        exec_array=self.request_exec_arr,
+                                        pc=0
+                                    )
+                                )
+                                self.request_exec_arr = []
+                                break
+
                         elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
                             self.co_stack.push(
                                 Continuation(
@@ -119,6 +141,10 @@ class Evaluator:
                     self.stack.push(cont.exec_array[i])
                 else:
                     raise Exception("NOT COME HERE")
+
+    def request_execute(self, exec_arr):
+        self.request_exec_arr = exec_arr.value
+
 
 
 
@@ -170,10 +196,10 @@ def register_primitives(stack, mydict, evaluator):
         index = val.value
         stack.push(stack.seek(index))
 
-    # def exec_op():
-    #     proc = stack.pop()
-    #     evaluator.eval(proc.value)
-    #
+    def exec_op():
+        proc = stack.pop()
+        evaluator.request_execute(proc)
+
     # def if_op():
     #     proc, bool_ = _pop_two_elems()
     #     if bool_.value:
@@ -209,7 +235,7 @@ def register_primitives(stack, mydict, evaluator):
     #
     # func_list = [def_op, pop_op, exch_op, dup_op, index_op,
     #              exec_op, if_op, ifelse_op, repeat_op, while_op]
-    func_list = [def_op]
+    func_list = [def_op, exec_op]
     for func in func_list:
         mydict.insert(
             key=Element(etype=Etype.EXECUTABLE_NAME, value=f"{func.__name__[:-3]}"),
@@ -227,10 +253,9 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("/a {{1}} def a"))
+    elems = to_elems(to_char_gen("{{1} exec 1} exec"))
     evaluator.eval(elems)
 
-    print(evaluator.stack)
     evaluator.stack.debug_print()
     #print(evaluator.dict_)
 
