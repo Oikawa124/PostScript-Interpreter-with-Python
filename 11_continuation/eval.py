@@ -90,21 +90,35 @@ class Evaluator:
             for i in range(cont.pc, len(cont.exec_array)):
                 if cont.exec_array[i].etype == Etype.NUMBER:
                     self.stack.push(cont.exec_array[i])
+                elif cont.exec_array[i].etype == Etype.EXECUTABLE_NAME:
+                    is_exist, dict_value = self.dict_.get(cont.exec_array[i])
+                    if is_exist:
+                        if dict_value.etype == Etype.FUNCTION:
+                            dict_value.value()
+                        elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
+                            self.co_stack.push(
+                                Continuation(
+                                    exec_array=cont.exec_array,
+                                    pc=i + 1
+                                )
+                            )
+                            self.co_stack.push(
+                                Continuation(
+                                    exec_array=cont.exec_array[i].value,
+                                    pc=0
+                                )
+                            )
+                            break
+                        else:
+                            self.stack.push(dict_value)
+                    else:
+                        self.stack.push(cont.exec_array[i])
+                elif cont.exec_array[i].etype == Etype.LITERAL_NAME:
+                    self.stack.push(cont.exec_array[i])
                 elif cont.exec_array[i].etype == Etype.EXECUTABLE_ARRAY:
-                    self.co_stack.push(
-                        Continuation(
-                            exec_array=cont.exec_array,
-                            pc=i+1
-                        )
-                    )
-                    self.co_stack.push(
-                        Continuation(
-                            exec_array=cont.exec_array[i].value,
-                            pc=0
-                        )
-                    )
-                    print(cont.exec_array[i])
-                    break
+                    self.stack.push(cont.exec_array[i])
+                else:
+                    raise Exception("NOT COME HERE")
 
 
 
@@ -217,6 +231,7 @@ def main():
     evaluator.eval(elems)
 
     print(evaluator.stack)
+    evaluator.stack.debug_print()
     #print(evaluator.dict_)
 
 
