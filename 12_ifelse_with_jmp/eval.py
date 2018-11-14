@@ -196,9 +196,9 @@ def register_primitives(stack, mydict, evaluator):
         index = val.value
         stack.push(stack.seek(index))
 
-    # def exec_op():
-    #     proc = stack.pop()
-    #     evaluator.request_execute(proc)
+    def exec_op():
+        proc = stack.pop()
+        evaluator.request_execute(proc)
 
     # def if_op():
     #     proc, bool_ = _pop_two_elems()
@@ -235,7 +235,7 @@ def register_primitives(stack, mydict, evaluator):
     #
     # func_list = [def_op, pop_op, exch_op, dup_op, index_op,
     #              exec_op, if_op, ifelse_op, repeat_op, while_op]
-    func_list = [def_op]
+    func_list = [def_op, exec_op]
     for func in func_list:
         mydict.insert(
             key=Element(etype=Etype.EXECUTABLE_NAME, value=f"{func.__name__[:-3]}"),
