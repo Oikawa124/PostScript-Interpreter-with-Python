@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Created by devel on 2018/11/05.
+# Created by devel on 2018/11/14.
+from collections import namedtuple
 
+Continuation = namedtuple("Continuation", ("exec_array", "pc"))
 
-class Stack:
+class CoStack:
     def __init__(self):
         self.stack = []
 
@@ -23,6 +25,12 @@ class Stack:
     def seek(self, index):
         return self.stack[len(self.stack) - index -1]
 
+    def is_empty(self):
+        if self.stack:
+            return False
+        else:
+            return True
+
     def __str__(self):
         if self.stack is None:
             return "Stack()"
@@ -36,9 +44,17 @@ class Stack:
             print("Stack()")
         for i, v in enumerate(self.stack):
             if type(v.value) is list:
-                print(f"#{i}#EXECUTABLE ARRAY#")
+                print("#EXECUTABLE ARRAY#")
                 for j, v in enumerate(v.value):
                     print(f"::{j}:{v.value}")
                 print("################")
             else:
                 print(f"{i}:{v.value}")
+
+
+def main():
+    pass
+
+
+if __name__ == '__main__':
+    main()
