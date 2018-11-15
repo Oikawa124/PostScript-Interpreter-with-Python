@@ -29,7 +29,7 @@ class Evaluator:
                 if elem.value == "exec":
                     self.eval_exec_array(self.stack.pop().value)
                 elif elem.value == "ifelse":
-                    pass
+                    self.eval_exec_array([x for g in ([elem], elems) for x in g])
                 else:
                     is_exist, dict_value = self.dict_.get(elem)
                     if is_exist:
@@ -256,7 +256,7 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("1 2 3 4 5 6 7 4 3 roll"))
+    elems = to_elems(to_char_gen("0 {1} {2} ifelse"))
     evaluator.eval(elems)
 
     evaluator.stack.debug_print()
