@@ -3,6 +3,7 @@
 # Created by devel on 2018/11/05.
 import operator as op
 from functools import partial
+from collections import deque
 
 from element import to_elems, Element, Etype
 from my_dict import Hashtable
@@ -27,6 +28,8 @@ class Evaluator:
             elif elem.etype == Etype.EXECUTABLE_NAME:
                 if elem.value == "exec":
                     self.eval_exec_array(self.stack.pop().value)
+                elif elem.value == "ifelse":
+                    pass
                 else:
                     is_exist, dict_value = self.dict_.get(elem)
                     if is_exist:
@@ -182,6 +185,20 @@ def register_primitives(stack, mydict, evaluator):
         index = val.value
         stack.push(stack.seek(index))
 
+    def roll_op():
+        j = stack.pop().value
+        n = stack.pop().value
+
+        queue = deque([stack.pop()for _ in range(n)])
+
+        for _ in range(j):
+            tmp = queue.popleft()
+            queue.append(tmp)
+
+        for elem in reversed(queue):
+            stack.push(elem)
+
+
     # def exec_op():
     #     proc = stack.pop()
     #     evaluator.request_execute(proc)
@@ -221,7 +238,7 @@ def register_primitives(stack, mydict, evaluator):
     #
     # func_list = [def_op, pop_op, exch_op, dup_op, index_op,
     #              exec_op, if_op, ifelse_op, repeat_op, while_op]
-    func_list = [def_op]
+    func_list = [def_op, roll_op]
     for func in func_list:
         mydict.insert(
             key=Element(etype=Etype.EXECUTABLE_NAME, value=f"{func.__name__[:-3]}"),
@@ -239,11 +256,13 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{1{1}{2} ifelse} exec"))
+    elems = to_elems(to_char_gen("1 2 3 4 5 6 7 4 3 roll"))
     evaluator.eval(elems)
 
     evaluator.stack.debug_print()
     #print(evaluator.dict_)
+
+    #todo 静的なifelseを実装する。
 
 
 if __name__ == '__main__':
