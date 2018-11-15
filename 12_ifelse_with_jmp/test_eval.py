@@ -248,6 +248,16 @@ def test_eval_index():
 
     assert expect.value == actual.value
 
+def test_eval_roll():
+    expect = Element(etype=Etype.NUMBER, value=4)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("1 2 3 4 5 6 7 4 3 roll")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+
 def test_eval_exec():
     expect = Element(etype=Etype.NUMBER, value=4)
 
