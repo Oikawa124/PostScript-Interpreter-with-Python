@@ -84,12 +84,7 @@ class Evaluator:
                         Element(etype=Etype.EXECUTABLE_NAME, value="pop"),
                         Element(etype=Etype.EXECUTABLE_NAME, value="exec"),
                     ]
-                    ex_arr.append(
-                        Element(
-                            etype=Etype.EXECUTABLE_ARRAY,
-                            value=exec_array_ifelse)
-                    )
-                    ex_arr.append(Element(etype=Etype.EXECUTABLE_NAME, value="exec"))
+                    ex_arr += exec_array_ifelse
                 else:
                     ex_arr.append(elem)
             elif elem.etype == Etype.OPEN_CURLY:
@@ -268,7 +263,7 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{0 {1} {2} ifelse} exec"))
+    elems = to_elems(to_char_gen("{1 {1} {2} ifelse} exec"))
     evaluator.eval(elems)
 
     evaluator.stack.debug_print()
