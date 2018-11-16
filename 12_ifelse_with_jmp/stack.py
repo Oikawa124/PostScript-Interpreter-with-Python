@@ -32,6 +32,7 @@ class Stack:
         return s + ")"
 
     def debug_print(self):
+        print("$------------------------------------$")
         if self.stack is None:
             print("Stack()")
         for i, v in enumerate(self.stack):
@@ -42,3 +43,4 @@ class Stack:
                 print("################")
             else:
                 print(f"{i}:{v.value}")
+        print("$------------------------------------$")
