@@ -71,7 +71,7 @@ class Evaluator:
                 if elem.value == "ifelse":
                     exec_array_ifelse = [
                         Element(etype=Etype.NUMBER, value=3),
-                        Element(etype=Etype.NUMBER, value=2), # 1 {2} {3} -> {3} 1 {2} -> {2} {3} 1
+                        Element(etype=Etype.NUMBER, value=2), # 1 {2} {3} -> {3} 1 {2} -> {2} {3} 1 ※1 -> 2へ変更
                         Element(etype=Etype.EXECUTABLE_NAME, value="roll"),
                         Element(etype=Etype.NUMBER, value=5),
                         Element(etype=Etype.EXECUTABLE_NAME, value="jmp_not_if"),
@@ -90,6 +90,8 @@ class Evaluator:
                             value=exec_array_ifelse)
                     )
                     ex_arr.append(Element(etype=Etype.EXECUTABLE_NAME, value="exec"))
+                else:
+                    ex_arr.append(elem)
             elif elem.etype == Etype.OPEN_CURLY:
                 rec_ex_arr = self.compile_exec_array(elems)
                 if rec_ex_arr:
@@ -138,6 +140,7 @@ class Evaluator:
                                 dict_value.value()
                             elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
                                 self.co_stack.push(exec_array=exec_array, pc=pc+1)
+                                self.co_stack.push(exec_array=dict_value.value, pc=0)
                                 break
                             else:
                                 self.stack.push(dict_value)
@@ -271,6 +274,7 @@ def main():
     evaluator.stack.debug_print()
     #print(evaluator.dict_)
 
+    #
 
 
 if __name__ == '__main__':

@@ -142,6 +142,26 @@ def test_eval_exec_arr_nested():
     for ex, ac in zip(expect, actual):
         assert ex.value == ac.value
 
+
+def test_eval_exec_arr_nested2():
+
+    expect = []
+    expect_nums = [1, 2, 3]
+    for i in expect_nums:
+        expect.append(Element(etype=Etype.NUMBER, value=i))
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen(
+        "/YY {2} def /XX {1 YY 3} def XX"
+    )))
+
+    actual = []
+    for i in evaluator.stack.gene():
+        actual.append(i)
+
+    for ex, ac in zip(expect, actual):
+        assert ex.value == ac.value
+
 def test_eval_exec_arr_nested_conpile():
 
     expect = Element(etype=Etype.NUMBER, value=3)
@@ -291,6 +311,15 @@ def test_eval_ifelse_in_exec_array():
 
     evaluator = Evaluator()
     evaluator.eval(to_elems(to_char_gen("{1 {2 4} {3 10} ifelse } exec")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+def test_eval_ifelse_in_dict():
+    expect = Element(etype=Etype.NUMBER, value=123)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("/hoge { { 456 } ifelse } def 1 {123} hoge")))
     actual = evaluator.stack.pop()
 
     assert expect.value == actual.value
