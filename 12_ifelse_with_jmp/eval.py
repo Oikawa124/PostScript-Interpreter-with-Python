@@ -29,7 +29,14 @@ class Evaluator:
                 if elem.value == "exec":
                     self.eval_exec_array(self.stack.pop().value)
                 elif elem.value == "ifelse":
-                    self.eval_exec_array([x for g in ([elem], elems) for x in g])
+                    proc2 = self.stack.pop()
+                    proc1 = self.stack.pop()
+                    bool_ = self.stack.pop()
+
+                    if bool_.value:
+                        self.eval_exec_array(proc1.value)
+                    else:
+                        self.eval_exec_array(proc2.value)
                 else:
                     is_exist, dict_value = self.dict_.get(elem)
                     if is_exist:
@@ -58,8 +65,31 @@ class Evaluator:
     def compile_exec_array(self, elems):
         ex_arr = []
         for elem in elems:
-            if elem.etype in {Etype.NUMBER, Etype.EXECUTABLE_NAME, Etype.LITERAL_NAME}:
+            if elem.etype in {Etype.NUMBER, Etype.LITERAL_NAME}:
                 ex_arr.append(elem)
+            elif elem.etype == Etype.EXECUTABLE_NAME:
+                if elem.value == "ifelse":
+                    exec_array_ifelse = [
+                        Element(etype=Etype.NUMBER, value=3),
+                        Element(etype=Etype.NUMBER, value=2), # 1 {2} {3} -> {3} 1 {2} -> {2} {3} 1
+                        Element(etype=Etype.EXECUTABLE_NAME, value="roll"),
+                        Element(etype=Etype.NUMBER, value=5),
+                        Element(etype=Etype.EXECUTABLE_NAME, value="jmp_not_if"),
+                        Element(etype=Etype.EXECUTABLE_NAME, value="pop"),
+                        # Element(etype=Etype.EXECUTABLE_NAME, value="pop"), #jmp_not_ifでcondと5をpopしているためいらない
+                        Element(etype=Etype.EXECUTABLE_NAME, value="exec"),
+                        Element(etype=Etype.NUMBER, value=4), # jmpは4つ先にするとlenよりも大きくなる -> breakする　※3->4へ
+                        Element(etype=Etype.EXECUTABLE_NAME, value="jmp"),
+                        Element(etype=Etype.EXECUTABLE_NAME, value="exch"),
+                        Element(etype=Etype.EXECUTABLE_NAME, value="pop"),
+                        Element(etype=Etype.EXECUTABLE_NAME, value="exec"),
+                    ]
+                    ex_arr.append(
+                        Element(
+                            etype=Etype.EXECUTABLE_ARRAY,
+                            value=exec_array_ifelse)
+                    )
+                    ex_arr.append(Element(etype=Etype.EXECUTABLE_NAME, value="exec"))
             elif elem.etype == Etype.OPEN_CURLY:
                 rec_ex_arr = self.compile_exec_array(elems)
                 if rec_ex_arr:
@@ -89,26 +119,6 @@ class Evaluator:
                         self.co_stack.push(exec_array=exec_array, pc=pc+1)
                         self.co_stack.push(exec_array=self.stack.pop().value, pc=0)
                         break
-                    elif exec_array[pc].value == "ifelse":
-                        proc2 = self.stack.pop()
-                        proc1 = self.stack.pop()
-                        bool = self.stack.pop()
-
-                        exec_array_ifelse = [
-                            bool,
-                            Element(etype=Etype.NUMBER, value=5),
-                            Element(etype=Etype.EXECUTABLE_NAME, value="jmp_not_if"),
-                            proc1,
-                            Element(etype=Etype.EXECUTABLE_NAME, value="exec"),
-                            Element(etype=Etype.NUMBER, value=3),
-                            Element(etype=Etype.EXECUTABLE_NAME, value="jmp"),
-                            proc2,
-                            Element(etype=Etype.EXECUTABLE_NAME, value="exec"),
-                        ]
-                        self.co_stack.push(exec_array=exec_array, pc=pc+1)
-                        self.co_stack.push(exec_array=exec_array_ifelse, pc=0)
-                        break
-
                     elif exec_array[pc].value == "jmp":
                         num = self.stack.pop().value
                         pc = pc + num - 1
@@ -236,9 +246,8 @@ def register_primitives(stack, mydict, evaluator):
     #         evaluator.eval(cond.value)
     #         val = stack.pop()
     #
-    # func_list = [def_op, pop_op, exch_op, dup_op, index_op,
-    #              exec_op, if_op, ifelse_op, repeat_op, while_op]
-    func_list = [def_op, roll_op]
+    # func_list = [exec_op, if_op, ifelse_op, repeat_op, while_op]
+    func_list = [def_op, roll_op, pop_op, exch_op, dup_op, index_op]
     for func in func_list:
         mydict.insert(
             key=Element(etype=Etype.EXECUTABLE_NAME, value=f"{func.__name__[:-3]}"),
@@ -256,13 +265,12 @@ def register_primitives(stack, mydict, evaluator):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("0 {1} {2} ifelse"))
+    elems = to_elems(to_char_gen("{0 {1} {2} ifelse} exec"))
     evaluator.eval(elems)
 
     evaluator.stack.debug_print()
     #print(evaluator.dict_)
 
-    #todo 静的なifelseを実装する。
 
 
 if __name__ == '__main__':
