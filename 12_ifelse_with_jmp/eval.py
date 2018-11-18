@@ -26,9 +26,7 @@ class Evaluator:
             if elem.etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
                 self.stack.push(elem)
             elif elem.etype == Etype.EXECUTABLE_NAME:
-                if elem.value == "exec":
-                    self.eval_exec_array(self.stack.pop().value)
-                elif elem.value == "ifelse":
+                if elem.value == "ifelse":
                     proc2 = self.stack.pop()
                     proc1 = self.stack.pop()
                     bool_ = self.stack.pop()
@@ -48,6 +46,8 @@ class Evaluator:
                             self.stack.push(dict_value)
                     else:
                         self.stack.push(elem)
+            elif elem.etype == Etype.OP_EXEC:
+                self.eval_exec_array(self.stack.pop().value)
             elif elem.etype == Etype.OPEN_CURLY:
                 ex_arr = self.compile_exec_array(elems)
                 if ex_arr:
@@ -94,14 +94,14 @@ class Evaluator:
             Element(etype=Etype.NUMBER, value=2),
             Element(etype=Etype.EXECUTABLE_NAME, value="roll"),
             Element(etype=Etype.NUMBER, value=5),
-            Element(etype=Etype.EXECUTABLE_NAME, value="jmp_not_if"),
+            Element(etype=Etype.OP_JMP_NOT_IF, value="jmp_not_if"),
             Element(etype=Etype.EXECUTABLE_NAME, value="pop"),
-            Element(etype=Etype.EXECUTABLE_NAME, value="exec"),
+            Element(etype=Etype.OP_EXEC, value="exec"),
             Element(etype=Etype.NUMBER, value=4),
-            Element(etype=Etype.EXECUTABLE_NAME, value="jmp"),
+            Element(etype=Etype.OP_JMP, value="jmp"),
             Element(etype=Etype.EXECUTABLE_NAME, value="exch"),
             Element(etype=Etype.EXECUTABLE_NAME, value="pop"),
-            Element(etype=Etype.EXECUTABLE_NAME, value="exec"),
+            Element(etype=Etype.OP_EXEC, value="exec"),
         ]
         return exec_array_ifelse
 
@@ -115,35 +115,34 @@ class Evaluator:
                 if exec_array[pc].etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
                     self.stack.push(exec_array[pc])
                 elif exec_array[pc].etype == Etype.EXECUTABLE_NAME:
-                    if exec_array[pc].value == "exec":
-                        self.co_stack.push(exec_array=exec_array, pc=pc+1)
-                        self.co_stack.push(exec_array=self.stack.pop().value, pc=0)
-                        break
-                    elif exec_array[pc].value == "jmp":
-                        num = self.stack.pop().value
-                        pc = pc + num - 1
-                        if pc >= len(exec_array):
+                    is_exist, dict_value = self.dict_.get(exec_array[pc])
+                    if is_exist:
+                        if dict_value.etype == Etype.FUNCTION:
+                            dict_value.value()
+                        elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
+                            self.co_stack.push(exec_array=exec_array, pc=pc+1)
+                            self.co_stack.push(exec_array=dict_value.value, pc=0)
                             break
-                    elif exec_array[pc].value == "jmp_not_if":
-                        num = self.stack.pop().value
-                        cond = self.stack.pop().value
-                        if cond == 0:
-                            pc = pc + num - 1
-                        if pc >= len(exec_array):
-                            break
-                    else:
-                        is_exist, dict_value = self.dict_.get(exec_array[pc])
-                        if is_exist:
-                            if dict_value.etype == Etype.FUNCTION:
-                                dict_value.value()
-                            elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
-                                self.co_stack.push(exec_array=exec_array, pc=pc+1)
-                                self.co_stack.push(exec_array=dict_value.value, pc=0)
-                                break
-                            else:
-                                self.stack.push(dict_value)
                         else:
-                            self.stack.push(exec_array[pc])
+                            self.stack.push(dict_value)
+                    else:
+                        self.stack.push(exec_array[pc])
+                elif exec_array[pc].etype == Etype.OP_EXEC:
+                    self.co_stack.push(exec_array=exec_array, pc=pc + 1)
+                    self.co_stack.push(exec_array=self.stack.pop().value, pc=0)
+                    break
+                elif exec_array[pc].etype == Etype.OP_JMP:
+                    num = self.stack.pop().value
+                    pc = pc + num - 1
+                    if pc >= len(exec_array):
+                        break
+                elif exec_array[pc].etype == Etype.OP_JMP_NOT_IF:
+                    num = self.stack.pop().value
+                    cond = self.stack.pop().value
+                    if cond == 0:
+                        pc = pc + num - 1
+                    if pc >= len(exec_array):
+                        break
                 else:
                     raise Exception("NOT COME HERE")
                 pc += 1

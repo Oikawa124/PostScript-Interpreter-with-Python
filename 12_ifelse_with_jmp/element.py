@@ -15,6 +15,9 @@ class Etype(IntEnum):
     EXECUTABLE_ARRAY = auto()
     OPEN_CURLY = auto()
     CLOSE_CURLY = auto()
+    OP_EXEC = auto()
+    OP_JMP = auto()
+    OP_JMP_NOT_IF = auto()
     NOT_EXIST = auto()
 
 
@@ -35,7 +38,10 @@ def to_elems(gene):
         if token.ltype == Ltype.NUMBER:
             yield Element(etype=Etype.NUMBER, value=token.value)
         elif token.ltype == Ltype.EXECUTABLE_NAME:
-            yield Element(etype=Etype.EXECUTABLE_NAME, value=token.value)
+            if token.value == "exec":
+                yield Element(etype=Etype.OP_EXEC, value=token.value)
+            else:
+                yield Element(etype=Etype.EXECUTABLE_NAME, value=token.value)
         elif token.ltype == Ltype.LITERAL_NAME:
             yield Element(etype=Etype.LITERAL_NAME, value=token.value)
         elif token.ltype == Ltype.OPEN_CURLY:
