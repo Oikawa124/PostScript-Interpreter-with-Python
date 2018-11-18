@@ -64,27 +64,13 @@ class Evaluator:
 
     def compile_exec_array(self, elems):
         ex_arr = []
-        for elem in elems:
+        for elem in \
+                elems:
             if elem.etype in {Etype.NUMBER, Etype.LITERAL_NAME}:
                 ex_arr.append(elem)
             elif elem.etype == Etype.EXECUTABLE_NAME:
                 if elem.value == "ifelse":
-                    exec_array_ifelse = [
-                        Element(etype=Etype.NUMBER, value=3),
-                        Element(etype=Etype.NUMBER, value=2), # 1 {2} {3} -> {3} 1 {2} -> {2} {3} 1 ※1 -> 2へ変更
-                        Element(etype=Etype.EXECUTABLE_NAME, value="roll"),
-                        Element(etype=Etype.NUMBER, value=5),
-                        Element(etype=Etype.EXECUTABLE_NAME, value="jmp_not_if"),
-                        Element(etype=Etype.EXECUTABLE_NAME, value="pop"),
-                        # Element(etype=Etype.EXECUTABLE_NAME, value="pop"), #jmp_not_ifでcondと5をpopしているためいらない
-                        Element(etype=Etype.EXECUTABLE_NAME, value="exec"),
-                        Element(etype=Etype.NUMBER, value=4), # jmpは4つ先にするとlenよりも大きくなる -> breakする　※3->4へ
-                        Element(etype=Etype.EXECUTABLE_NAME, value="jmp"),
-                        Element(etype=Etype.EXECUTABLE_NAME, value="exch"),
-                        Element(etype=Etype.EXECUTABLE_NAME, value="pop"),
-                        Element(etype=Etype.EXECUTABLE_NAME, value="exec"),
-                    ]
-                    ex_arr += exec_array_ifelse
+                    ex_arr += self.ifelse_complie()
                 else:
                     ex_arr.append(elem)
             elif elem.etype == Etype.OPEN_CURLY:
@@ -101,6 +87,23 @@ class Evaluator:
             else:
                 raise Exception("NOT COME HERE")
         return ex_arr
+
+    def ifelse_complie(self):
+        exec_array_ifelse = [
+            Element(etype=Etype.NUMBER, value=3),
+            Element(etype=Etype.NUMBER, value=2),
+            Element(etype=Etype.EXECUTABLE_NAME, value="roll"),
+            Element(etype=Etype.NUMBER, value=5),
+            Element(etype=Etype.EXECUTABLE_NAME, value="jmp_not_if"),
+            Element(etype=Etype.EXECUTABLE_NAME, value="pop"),
+            Element(etype=Etype.EXECUTABLE_NAME, value="exec"),
+            Element(etype=Etype.NUMBER, value=4),
+            Element(etype=Etype.EXECUTABLE_NAME, value="jmp"),
+            Element(etype=Etype.EXECUTABLE_NAME, value="exch"),
+            Element(etype=Etype.EXECUTABLE_NAME, value="pop"),
+            Element(etype=Etype.EXECUTABLE_NAME, value="exec"),
+        ]
+        return exec_array_ifelse
 
     def eval_exec_array(self, ex_arr):
         self.co_stack.push(exec_array=ex_arr, pc=0)
