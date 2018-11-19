@@ -38,10 +38,7 @@ def to_elems(gene):
         if token.ltype == Ltype.NUMBER:
             yield Element(etype=Etype.NUMBER, value=token.value)
         elif token.ltype == Ltype.EXECUTABLE_NAME:
-            if token.value == "exec":
-                yield Element(etype=Etype.OP_EXEC, value=token.value)
-            else:
-                yield Element(etype=Etype.EXECUTABLE_NAME, value=token.value)
+            yield Element(etype=Etype.EXECUTABLE_NAME, value=token.value)
         elif token.ltype == Ltype.LITERAL_NAME:
             yield Element(etype=Etype.LITERAL_NAME, value=token.value)
         elif token.ltype == Ltype.OPEN_CURLY:

@@ -18,11 +18,14 @@ class Evaluator:
     def __init__(self):
         self.stack = Stack()
         self.dict_ = Hashtable()
-        register_primitives(self.stack, self.dict_, self)
+        self.dict_of_compile = {}
         self.co_stack = CoStack()
+        register_compile_primitives(self.dict_of_compile)
+        register_primitives(self.stack, self.dict_, self)
 
     def eval(self, elems):
         for elem in elems:
+            self.stack.debug_print()
             if elem.etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
                 self.stack.push(elem)
             elif elem.etype == Etype.EXECUTABLE_NAME:
@@ -64,14 +67,15 @@ class Evaluator:
 
     def compile_exec_array(self, elems):
         ex_arr = []
-        for elem in \
-                elems:
+        for elem in elems:
             if elem.etype in {Etype.NUMBER, Etype.LITERAL_NAME}:
                 ex_arr.append(elem)
             elif elem.etype == Etype.EXECUTABLE_NAME:
-                if elem.value == "ifelse":
-                    ex_arr += self.ifelse_complie()
-                else:
+                try:
+                    func = self.dict_of_compile[elem]
+                    if func.etype == Etype.FUNCTION:
+                        ex_arr += func.value()
+                except:
                     ex_arr.append(elem)
             elif elem.etype == Etype.OPEN_CURLY:
                 rec_ex_arr = self.compile_exec_array(elems)
@@ -88,22 +92,7 @@ class Evaluator:
                 raise Exception("NOT COME HERE")
         return ex_arr
 
-    def ifelse_complie(self):
-        exec_array_ifelse = [
-            Element(etype=Etype.NUMBER, value=3),
-            Element(etype=Etype.NUMBER, value=2),
-            Element(etype=Etype.EXECUTABLE_NAME, value="roll"),
-            Element(etype=Etype.NUMBER, value=5),
-            Element(etype=Etype.OP_JMP_NOT_IF, value="jmp_not_if"),
-            Element(etype=Etype.EXECUTABLE_NAME, value="pop"),
-            Element(etype=Etype.OP_EXEC, value="exec"),
-            Element(etype=Etype.NUMBER, value=4),
-            Element(etype=Etype.OP_JMP, value="jmp"),
-            Element(etype=Etype.EXECUTABLE_NAME, value="exch"),
-            Element(etype=Etype.EXECUTABLE_NAME, value="pop"),
-            Element(etype=Etype.OP_EXEC, value="exec"),
-        ]
-        return exec_array_ifelse
+
 
     def eval_exec_array(self, ex_arr):
         self.co_stack.push(exec_array=ex_arr, pc=0)
@@ -208,24 +197,6 @@ def register_primitives(stack, mydict, evaluator):
         for elem in reversed(queue):
             stack.push(elem)
 
-
-    # def exec_op():
-    #     proc = stack.pop()
-    #     evaluator.request_execute(proc)
-
-    # def if_op():
-    #     proc, bool_ = _pop_two_elems()
-    #     if bool_.value:
-    #         evaluator.eval(proc.value)
-    #
-    # def ifelse_op():
-    #     proc2, proc1 = _pop_two_elems()
-    #     bool_ = stack.pop()
-    #
-    #     if bool_.value:
-    #         evaluator.eval(proc1.value)
-    #     else:
-    #         evaluator.eval(proc2.value)
     #
     # def repeat_op():
     #     proc, n = _pop_two_elems()
@@ -246,7 +217,7 @@ def register_primitives(stack, mydict, evaluator):
     #         evaluator.eval(cond.value)
     #         val = stack.pop()
     #
-    # func_list = [exec_op, if_op, ifelse_op, repeat_op, while_op]
+    # func_list = [repeat_op, while_op]
     func_list = [def_op, roll_op, pop_op, exch_op, dup_op, index_op]
     for func in func_list:
         mydict.insert(
@@ -263,9 +234,38 @@ def register_primitives(stack, mydict, evaluator):
         )
 
 
+def register_compile_primitives(dict_):
+    def ifelse_compile():
+        exec_array_ifelse = [
+            Element(etype=Etype.NUMBER, value=3),
+            Element(etype=Etype.NUMBER, value=2),
+            Element(etype=Etype.EXECUTABLE_NAME, value="roll"),
+            Element(etype=Etype.NUMBER, value=5),
+            Element(etype=Etype.OP_JMP_NOT_IF, value="jmp_not_if"),
+            Element(etype=Etype.EXECUTABLE_NAME, value="pop"),
+            Element(etype=Etype.OP_EXEC, value="exec"),
+            Element(etype=Etype.NUMBER, value=4),
+            Element(etype=Etype.OP_JMP, value="jmp"),
+            Element(etype=Etype.EXECUTABLE_NAME, value="exch"),
+            Element(etype=Etype.EXECUTABLE_NAME, value="pop"),
+            Element(etype=Etype.OP_EXEC, value="exec"),
+        ]
+        return exec_array_ifelse
+
+    def exec_compile():
+        return Element(etype=Etype.OP_EXEC, value="exec")
+
+    func_list = [ifelse_compile, exec_compile]
+
+    for func in func_list:
+        key = Element(etype=Etype.EXECUTABLE_NAME, value=f"{func.__name__[:-8]}")
+        value = Element(etype=Etype.FUNCTION, value=func)
+        dict_[key] = value
+
+
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{1 {1} {2} ifelse} exec"))
+    elems = to_elems(to_char_gen("{1 {1 1 add} {3} ifelse} exec"))
     evaluator.eval(elems)
 
     evaluator.stack.debug_print()
