@@ -25,6 +25,7 @@ class Evaluator:
 
     def eval(self, elems):
         for elem in elems:
+            self.stack.debug_print()
             if elem.etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
                 self.stack.push(elem)
             elif elem.etype == Etype.EXECUTABLE_NAME:
@@ -115,36 +116,18 @@ class Evaluator:
                 if exec_array[pc].etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
                     self.stack.push(exec_array[pc])
                 elif exec_array[pc].etype == Etype.EXECUTABLE_NAME:
-                    if exec_array[pc].value == "while":
-                        body = self.stack.pop()
-                        cond = self.stack.pop()
-                        exec_array_while = [
-                            cond,
-                            Element(etype=Etype.OP_EXEC, value="exec"),
-                            Element(etype=Etype.NUMBER, value=5),
-                            Element(etype=Etype.OP_JMP_NOT_IF, value="jmp_not_if"),
-                            body,
-                            Element(etype=Etype.OP_EXEC, value="exec"),
-                            Element(etype=Etype.NUMBER, value=-7),
-                            Element(etype=Etype.OP_JMP, value="jmp"),
-                        ]
-                        self.co_stack.push(exec_array=exec_array, pc=pc+1)
-                        self.co_stack.push(exec_array=exec_array_while, pc=0)
-                        break
-
-                    else:
-                        is_exist, dict_value = self.dict_.get(exec_array[pc])
-                        if is_exist:
-                            if dict_value.etype == Etype.FUNCTION:
-                                dict_value.value()
-                            elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
-                                self.co_stack.push(exec_array=exec_array, pc=pc+1)
-                                self.co_stack.push(exec_array=dict_value.value, pc=0)
-                                break
-                            else:
-                                self.stack.push(dict_value)
+                    is_exist, dict_value = self.dict_.get(exec_array[pc])
+                    if is_exist:
+                        if dict_value.etype == Etype.FUNCTION:
+                            dict_value.value()
+                        elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
+                            self.co_stack.push(exec_array=exec_array, pc=pc+1)
+                            self.co_stack.push(exec_array=dict_value.value, pc=0)
+                            break
                         else:
-                            self.stack.push(exec_array[pc])
+                            self.stack.push(dict_value)
+                    else:
+                        self.stack.push(exec_array[pc])
                 elif exec_array[pc].etype == Etype.OP_EXEC:
                     self.co_stack.push(exec_array=exec_array, pc=pc+1)
                     self.co_stack.push(exec_array=self.stack.pop().value, pc=0)
@@ -161,6 +144,12 @@ class Evaluator:
                         pc = pc + num - 1
                     if pc >= len(exec_array):
                         break
+                elif exec_array[pc].etype == Etype.OP_STORE:
+                    self.co_stack.store(self.stack.pop())
+
+                elif exec_array[pc].etype == Etype.OP_LOAD:
+                    num = self.stack.pop().value
+                    self.stack.push(self.co_stack.load(num))
                 else:
                     raise Exception("NOT COME HERE")
                 pc += 1
@@ -287,13 +276,27 @@ def register_compile_primitives(dict_):
     def if_compile():
         pass
 
-    # def while_compile():
-    #     pass
+    def while_compile():
+        exec_array_while = [
+            Element(etype=Etype.OP_STORE, value="store"),
+            Element(etype=Etype.OP_STORE, value="store"),
+            Element(etype=Etype.NUMBER, value=1),
+            Element(etype=Etype.OP_LOAD, value="load"),
+            Element(etype=Etype.OP_EXEC, value="exec"),
+            Element(etype=Etype.NUMBER, value=6),
+            Element(etype=Etype.OP_JMP_NOT_IF, value="jmp_not_if"),
+            Element(etype=Etype.NUMBER, value=0),
+            Element(etype=Etype.OP_LOAD, value="load"),
+            Element(etype=Etype.OP_EXEC, value="exec"),
+            Element(etype=Etype.NUMBER, value=-9),
+            Element(etype=Etype.OP_JMP, value="jmp"),
+        ]
+        return exec_array_while
 
     def repeat_compile():
         pass
 
-    func_list = [ifelse_compile, exec_compile, if_compile, repeat_compile]  # while_compile
+    func_list = [ifelse_compile, exec_compile, while_compile, if_compile, repeat_compile]  # while_compile
 
     for func in func_list:
         key = Element(etype=Etype.EXECUTABLE_NAME, value=f"{func.__name__[:-8]}")
