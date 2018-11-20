@@ -340,14 +340,14 @@ def register_compile_primitives(dict_):
 
 def main():
     evaluator = Evaluator()
-    input_ = "0 {1} if"
-    #while True:
-        # input_ = input()
-        # if input_ == "exit":
-        #     break
-    elems = to_elems(to_char_gen(input_))
-    evaluator.eval(elems)
-    evaluator.stack.debug_print()
+    #input_ = "0 {1} if"
+    while True:
+        input_ = input()
+        if input_ == "exit":
+            break
+        elems = to_elems(to_char_gen(input_))
+        evaluator.eval(elems)
+        evaluator.stack.debug_print()
     # print(evaluator.dict_)
 
 
