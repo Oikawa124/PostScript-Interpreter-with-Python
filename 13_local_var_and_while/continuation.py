@@ -5,36 +5,21 @@
 class CoStack:
     def __init__(self):
         self.stack = []
-        self.local_var = {}
-        self.counter = self.counter()
-        self.cnt = 0
 
     def push(self, exec_array, pc):
-        self.stack.append((exec_array, pc, self.local_var))
-        self.cnt = 0
-        self.local_var = {}
+        self.stack.append((True, (exec_array, pc)))
 
     def pop(self):
         try:
-            _, _, local_var = self.stack[-1]
-            if local_var:
-                self.local_var = local_var
             return self.stack.pop()
         except IndexError:
             raise
 
-    def store(self, var):
-        num = next(self.counter)
-        self.local_var[num] = var
-        print(self.local_var)
+    def store(self, val):
+        self.stack.append((False, val))
 
     def load(self, num):
-        return self.local_var[num]
-
-    def counter(self):
-        while True:
-            yield self.cnt
-            self.cnt += 1
+        return self.stack[-num][1]
 
     def is_empty(self):
         if self.stack:

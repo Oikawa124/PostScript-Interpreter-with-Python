@@ -25,7 +25,6 @@ class Evaluator:
 
     def eval(self, elems):
         for elem in elems:
-            self.stack.debug_print()
             if elem.etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
                 self.stack.push(elem)
             elif elem.etype == Etype.EXECUTABLE_NAME:
@@ -110,7 +109,13 @@ class Evaluator:
         self.co_stack.push(exec_array=ex_arr, pc=0)
 
         while not self.co_stack.is_empty():
-            exec_array, pc, _ = self.co_stack.pop()
+            is_cont, cont_or_val = self.co_stack.pop()
+            try:
+                while not is_cont:
+                    is_cont, cont_or_val = self.co_stack.pop()
+                exec_array, pc = cont_or_val
+            except IndexError:
+                break
 
             while pc < len(exec_array):
                 if exec_array[pc].etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
@@ -223,18 +228,6 @@ def register_primitives(stack, mydict, evaluator):
     #     for _ in range(cnt):
     #         evaluator.eval(proc.value)
     #
-    # def while_op():
-    #     body, cond = _pop_two_elems()
-    #
-    #     evaluator.eval(cond.value)
-    #
-    #     val = stack.pop()
-    #
-    #     while val.value:
-    #         evaluator.eval(body.value)
-    #         evaluator.eval(cond.value)
-    #         val = stack.pop()
-    #
     # func_list = [repeat_op, while_op]
     func_list = [def_op, roll_op, pop_op, exch_op, dup_op, index_op]
     for func in func_list:
@@ -303,7 +296,7 @@ def register_compile_primitives(dict_):
         value = Element(etype=Etype.FUNCTION, value=func)
         dict_[key] = value
 
-    #todo 残りの実装 if, while, repeat
+    #todo 残りの実装 if, repeat
 
 
 def main():
