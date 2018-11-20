@@ -338,12 +338,14 @@ def register_compile_primitives(dict_):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{1 {1 1 1 add add} if} exec"))
-    evaluator.eval(elems)
-
-    evaluator.stack.debug_print()
-    #print(evaluator.dict_)
-
+    while True:
+        input_ = input()
+        if input_ == "exit":
+            break
+        elems = to_elems(to_char_gen(input_))
+        evaluator.eval(elems)
+        evaluator.stack.debug_print()
+    # print(evaluator.dict_)
 
 
 if __name__ == '__main__':
