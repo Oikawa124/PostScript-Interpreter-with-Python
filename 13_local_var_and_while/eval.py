@@ -235,15 +235,6 @@ def register_primitives(stack, mydict, evaluator):
         for elem in reversed(queue):
             stack.push(elem)
 
-    #
-    # def repeat_op():
-    #     proc, n = _pop_two_elems()
-    #     cnt = n.value
-    #
-    #     for _ in range(cnt):
-    #         evaluator.eval(proc.value)
-    #
-    # func_list = [repeat_op, while_op]
     func_list = [def_op, roll_op, pop_op, exch_op, dup_op, index_op]
     for func in func_list:
         mydict.insert(
@@ -285,7 +276,18 @@ def register_compile_primitives(dict_):
         return [Element(etype=Etype.OP_LPOP, value="lpop")]
 
     def if_compile():
-        pass
+        exec_array_if = [
+            Element(etype=Etype.OP_STORE, value="store"),
+            Element(etype=Etype.OP_STORE, value="store"),
+            Element(etype=Etype.NUMBER, value=1),
+            Element(etype=Etype.OP_LOAD, value="load"),
+            Element(etype=Etype.NUMBER, value=4),
+            Element(etype=Etype.OP_JMP_NOT_IF, value="jmp_not_if"),
+            Element(etype=Etype.NUMBER, value=2),
+            Element(etype=Etype.OP_LOAD, value="load"),
+            Element(etype=Etype.OP_EXEC, value="exec"),
+        ]
+        return exec_array_if
 
     def while_compile():
         exec_array_while = [
@@ -333,12 +335,10 @@ def register_compile_primitives(dict_):
         value = Element(etype=Etype.FUNCTION, value=func)
         dict_[key] = value
 
-    #todo 残りの実装 if, repeat
-
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{10 {1 2 add} repeat} exec"))
+    elems = to_elems(to_char_gen("{1 {1 1 1 add add} if} exec"))
     evaluator.eval(elems)
 
     evaluator.stack.debug_print()

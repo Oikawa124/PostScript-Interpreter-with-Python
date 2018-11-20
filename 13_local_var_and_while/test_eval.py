@@ -296,6 +296,17 @@ def test_eval_if():
 
     assert expect.value == actual.value
 
+
+def test_eval_if_in_exec_array():
+    expect = Element(etype=Etype.NUMBER, value=4)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("{1 {4} if} exec")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
+
 def test_eval_ifelse():
     expect = Element(etype=Etype.NUMBER, value=4)
 
