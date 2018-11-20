@@ -28,53 +28,16 @@ class Evaluator:
             if elem.etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
                 self.stack.push(elem)
             elif elem.etype == Etype.EXECUTABLE_NAME:
-                if elem.value == "if":
-                    proc = self.stack.pop()
-                    bool_ = self.stack.pop()
-
-                    if bool_.value:
-                        self.eval_exec_array(proc.value)
-                elif elem.value == "ifelse":
-                    proc2 = self.stack.pop()
-                    proc1 = self.stack.pop()
-                    bool_ = self.stack.pop()
-
-                    if bool_.value:
-                        self.eval_exec_array(proc1.value)
+                is_exist, dict_value = self.dict_.get(elem)
+                if is_exist:
+                    if dict_value.etype == Etype.FUNCTION:
+                        dict_value.value()
+                    elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
+                        self.eval_exec_array(dict_value.value)
                     else:
-                        self.eval_exec_array(proc2.value)
-                elif elem.value == "exec":
-                    self.eval_exec_array(self.stack.pop().value)
-                elif elem.value == "while":
-                    body = self.stack.pop()
-                    cond = self.stack.pop()
-
-                    self.eval_exec_array(cond.value)
-
-                    val = self.stack.pop()
-
-                    while val.value:
-                        self.eval_exec_array(body.value)
-                        self.eval_exec_array(cond.value)
-                        val = self.stack.pop()
-                elif elem.value == "repeat":
-                    proc = self.stack.pop()
-                    n = self.stack.pop()
-                    cnt = n.value
-                    for _ in range(cnt):
-                        self.eval_exec_array(proc.value)
-
+                        self.stack.push(dict_value)
                 else:
-                    is_exist, dict_value = self.dict_.get(elem)
-                    if is_exist:
-                        if dict_value.etype == Etype.FUNCTION:
-                            dict_value.value()
-                        elif dict_value.etype == Etype.EXECUTABLE_ARRAY:
-                            self.eval_exec_array(dict_value.value)
-                        else:
-                            self.stack.push(dict_value)
-                    else:
-                        self.stack.push(elem)
+                    self.stack.push(elem)
             elif elem.etype == Etype.OPEN_CURLY:
                 ex_arr = self.compile_exec_array(elems)
                 if ex_arr:
@@ -151,15 +114,15 @@ class Evaluator:
                     self.co_stack.push(exec_array=self.stack.pop().value, pc=0)
                     break
                 elif exec_array[pc].etype == Etype.OP_JMP:
-                    num = self.stack.pop().value
-                    pc = pc + num - 1
+                    offset = self.stack.pop().value
+                    pc = pc + offset - 1
                     if pc >= len(exec_array):
                         break
                 elif exec_array[pc].etype == Etype.OP_JMP_NOT_IF:
-                    num = self.stack.pop().value
+                    offset = self.stack.pop().value
                     cond = self.stack.pop().value
                     if cond == 0:
-                        pc = pc + num - 1
+                        pc = pc + offset - 1
                     if pc >= len(exec_array):
                         break
                 elif exec_array[pc].etype == Etype.OP_STORE:
@@ -218,8 +181,7 @@ def register_primitives(stack, mydict, evaluator):
         stack.push(val)
 
     def index_op():
-        val = stack.pop()
-        index = val.value
+        index = stack.pop().value
         stack.push(stack.seek(index))
 
     def roll_op():
@@ -235,7 +197,47 @@ def register_primitives(stack, mydict, evaluator):
         for elem in reversed(queue):
             stack.push(elem)
 
-    func_list = [def_op, roll_op, pop_op, exch_op, dup_op, index_op]
+    def if_op():
+        proc = stack.pop()
+        bool_ = stack.pop()
+
+        if bool_.value:
+            evaluator.eval_exec_array(proc.value)
+
+    def ifelse_op():
+        proc2 = stack.pop()
+        proc1 = stack.pop()
+        bool_ = stack.pop()
+
+        if bool_.value:
+            evaluator.eval_exec_array(proc1.value)
+        else:
+            evaluator.eval_exec_array(proc2.value)
+
+    def exec_():
+        evaluator.eval_exec_array(stack.pop().value)
+
+    def while_op():
+        body = stack.pop()
+        cond = stack.pop()
+
+        evaluator.eval_exec_array(cond.value)
+
+        val = stack.pop()
+
+        while val.value:
+            evaluator.eval_exec_array(body.value)
+            evaluator.eval_exec_array(cond.value)
+            val = stack.pop()
+    def repeat_op():
+        proc = stack.pop()
+        n = stack.pop()
+        cnt = n.value
+        for _ in range(cnt):
+            evaluator.eval_exec_array(proc.value)
+
+    func_list = [def_op, roll_op, pop_op, exch_op, dup_op, index_op, if_op,
+                 ifelse_op, while_op, repeat_op]
     for func in func_list:
         mydict.insert(
             key=Element(etype=Etype.EXECUTABLE_NAME, value=f"{func.__name__[:-3]}"),
@@ -338,13 +340,14 @@ def register_compile_primitives(dict_):
 
 def main():
     evaluator = Evaluator()
-    while True:
-        input_ = input()
-        if input_ == "exit":
-            break
-        elems = to_elems(to_char_gen(input_))
-        evaluator.eval(elems)
-        evaluator.stack.debug_print()
+    input_ = "0 {1} if"
+    #while True:
+        # input_ = input()
+        # if input_ == "exit":
+        #     break
+    elems = to_elems(to_char_gen(input_))
+    evaluator.eval(elems)
+    evaluator.stack.debug_print()
     # print(evaluator.dict_)
 
 

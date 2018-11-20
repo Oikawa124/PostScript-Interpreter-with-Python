@@ -18,8 +18,8 @@ class CoStack:
     def store(self, val):
         self.stack.append((False, val))
 
-    def load(self, num):
-        return self.stack[-num][1]
+    def load(self, index):
+        return self.stack[-index][1]
 
     def is_empty(self):
         if self.stack:
