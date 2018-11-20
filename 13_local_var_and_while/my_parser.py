@@ -21,7 +21,6 @@ Token = namedtuple("Token", ("ltype", "value"))
 
 
 def parse_one(gene):
-    # next()のラッパー
     def next_ch(gene):
         try:
             return next(gene)

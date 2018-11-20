@@ -330,7 +330,7 @@ def register_compile_primitives(dict_):
         ]
         return exec_array_repeat
 
-    func_list = [ifelse_compile, exec_compile, while_compile, if_compile, repeat_compile, lpop_complile]  # while_compile
+    func_list = [ifelse_compile, exec_compile, while_compile, if_compile, repeat_compile, lpop_complile]
 
     for func in func_list:
         key = Element(etype=Etype.EXECUTABLE_NAME, value=f"{func.__name__[:-8]}")

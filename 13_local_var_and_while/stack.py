@@ -16,7 +16,7 @@ class Stack:
         except IndexError:
             raise
 
-    def gene(self): # listの要素を返すジェネレータ
+    def gene(self):
         for val in self.stack:
             yield val
 

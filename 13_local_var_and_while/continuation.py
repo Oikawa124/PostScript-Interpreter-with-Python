@@ -46,11 +46,3 @@ class CoStack:
                 print("################")
             else:
                 print(f"{i}:{v.value}")
-
-
-def main():
-    pass
-
-
-if __name__ == '__main__':
-    main()
