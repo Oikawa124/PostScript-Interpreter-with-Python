@@ -28,7 +28,13 @@ class Evaluator:
             if elem.etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
                 self.stack.push(elem)
             elif elem.etype == Etype.EXECUTABLE_NAME:
-                if elem.value == "ifelse":
+                if elem.value == "if":
+                    proc = self.stack.pop()
+                    bool_ = self.stack.pop()
+
+                    if bool_.value:
+                        self.eval_exec_array(proc.value)
+                elif elem.value == "ifelse":
                     proc2 = self.stack.pop()
                     proc1 = self.stack.pop()
                     bool_ = self.stack.pop()
@@ -51,6 +57,13 @@ class Evaluator:
                         self.eval_exec_array(body.value)
                         self.eval_exec_array(cond.value)
                         val = self.stack.pop()
+                elif elem.value == "repeat":
+                    proc = self.stack.pop()
+                    n = self.stack.pop()
+                    cnt = n.value
+                    for _ in range(cnt):
+                        self.eval_exec_array(proc.value)
+
                 else:
                     is_exist, dict_value = self.dict_.get(elem)
                     if is_exist:
@@ -155,6 +168,8 @@ class Evaluator:
                 elif exec_array[pc].etype == Etype.OP_LOAD:
                     num = self.stack.pop().value
                     self.stack.push(self.co_stack.load(num))
+                elif exec_array[pc].etype == Etype.OP_LPOP:
+                    self.co_stack.pop()
                 else:
                     raise Exception("NOT COME HERE")
                 pc += 1
@@ -266,6 +281,9 @@ def register_compile_primitives(dict_):
     def exec_compile():
         return [Element(etype=Etype.OP_EXEC, value="exec")]
 
+    def lpop_complile():
+        return [Element(etype=Etype.OP_LPOP, value="lpop")]
+
     def if_compile():
         pass
 
@@ -287,9 +305,28 @@ def register_compile_primitives(dict_):
         return exec_array_while
 
     def repeat_compile():
-        pass
+        exec_array_repeat = [
+            Element(etype=Etype.OP_STORE, value="store"),
+            Element(etype=Etype.OP_STORE, value="store"),
+            Element(etype=Etype.NUMBER, value=1),
+            Element(etype=Etype.OP_LOAD, value="load"),
+            Element(etype=Etype.NUMBER, value=12),
+            Element(etype=Etype.OP_JMP_NOT_IF, value="jmp_not_if"),
+            Element(etype=Etype.NUMBER, value=2),
+            Element(etype=Etype.OP_LOAD, value="load"),
+            Element(etype=Etype.OP_EXEC, value="exec"),
+            Element(etype=Etype.NUMBER, value=1),
+            Element(etype=Etype.OP_LOAD, value="load"),
+            Element(etype=Etype.NUMBER, value=1),
+            Element(etype=Etype.EXECUTABLE_NAME, value="sub"),
+            Element(etype=Etype.OP_LPOP, value="lpop"),
+            Element(etype=Etype.OP_STORE, value="store"),
+            Element(etype=Etype.NUMBER, value=-14),
+            Element(etype=Etype.OP_JMP, value="jmp"),
+        ]
+        return exec_array_repeat
 
-    func_list = [ifelse_compile, exec_compile, while_compile, if_compile, repeat_compile]  # while_compile
+    func_list = [ifelse_compile, exec_compile, while_compile, if_compile, repeat_compile, lpop_complile]  # while_compile
 
     for func in func_list:
         key = Element(etype=Etype.EXECUTABLE_NAME, value=f"{func.__name__[:-8]}")
@@ -301,7 +338,7 @@ def register_compile_primitives(dict_):
 
 def main():
     evaluator = Evaluator()
-    elems = to_elems(to_char_gen("{5 dup {dup 1 gt} {1 sub exch 1 index mul exch} while pop} exec"))
+    elems = to_elems(to_char_gen("{10 {1 2 add} repeat} exec"))
     evaluator.eval(elems)
 
     evaluator.stack.debug_print()

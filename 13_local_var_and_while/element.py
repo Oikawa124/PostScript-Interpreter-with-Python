@@ -20,6 +20,7 @@ class Etype(IntEnum):
     OP_JMP_NOT_IF = auto()
     OP_STORE = auto()
     OP_LOAD = auto()
+    OP_LPOP = auto()
     NOT_EXIST = auto()
 
 
