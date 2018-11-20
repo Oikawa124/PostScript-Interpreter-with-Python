@@ -353,6 +353,15 @@ def test_eval_repeat_in_exec_array():
 
     assert expect.value == actual.value
 
+def test_eval_repeat_in_exec_array2():
+    expect = Element(etype=Etype.NUMBER, value=200)
+
+    evaluator = Evaluator()
+    evaluator.eval(to_elems(to_char_gen("{0 10 {10 10 add add} repeat} exec")))
+    actual = evaluator.stack.pop()
+
+    assert expect.value == actual.value
+
 
 def test_eval_while():
     expect = Element(etype=Etype.NUMBER, value=120)
