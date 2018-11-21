@@ -85,13 +85,14 @@ class Evaluator:
         self.co_stack.push(exec_array=ex_arr, pc=0)
 
         while not self.co_stack.is_empty():
-            is_cont, cont_or_val = self.co_stack.pop()
-            try:
-                while not is_cont:
-                    is_cont, cont_or_val = self.co_stack.pop()
-                exec_array, pc = cont_or_val
-            except IndexError:
-                break
+            # is_cont, cont_or_val = self.co_stack.pop()
+            # try:
+            #     while not is_cont:
+            #         is_cont, cont_or_val = self.co_stack.pop()
+            #     exec_array, pc = cont_or_val
+            # except IndexError:
+            #     break
+            exec_array, pc = self.co_stack.pop()
 
             while pc < len(exec_array):
                 if exec_array[pc].etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
@@ -132,7 +133,7 @@ class Evaluator:
                     num = self.stack.pop().value
                     self.stack.push(self.co_stack.load(num))
                 elif exec_array[pc].etype == Etype.OP_LPOP:
-                    self.co_stack.pop()
+                    self.co_stack.one_pop()
                 else:
                     raise Exception("NOT COME HERE")
                 pc += 1
@@ -340,14 +341,11 @@ def register_compile_primitives(dict_):
 
 def main():
     evaluator = Evaluator()
-    #input_ = "0 {1} if"
-    while True:
-        input_ = input()
-        if input_ == "exit":
-            break
-        elems = to_elems(to_char_gen(input_))
-        evaluator.eval(elems)
-        evaluator.stack.debug_print()
+    input_ = "{{1 {1} repeat} exec} exec"
+
+    elems = to_elems(to_char_gen(input_))
+    evaluator.eval(elems)
+    evaluator.stack.debug_print()
     # print(evaluator.dict_)
 
 

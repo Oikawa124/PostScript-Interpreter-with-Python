@@ -11,7 +11,19 @@ class CoStack:
 
     def pop(self):
         try:
-            return self.stack.pop()
+            is_cont, cont_or_val = self.stack.pop()
+            while not is_cont:
+                if self.is_empty():
+                    print(self.stack)
+                    return ([], 0)
+                is_cont, cont_or_val = self.stack.pop()
+            return cont_or_val
+        except IndexError:
+            raise
+
+    def one_pop(self):
+        try:
+            self.stack.pop()
         except IndexError:
             raise
 
@@ -39,10 +51,10 @@ class CoStack:
         if self.stack is None:
             print("Stack()")
         for i, v in enumerate(self.stack):
-            if type(v.value) is list:
+            if type(v) is tuple:
                 print("#EXECUTABLE ARRAY#")
                 for j, v in enumerate(v.value):
-                    print(f"::{j}:{v.value}")
+                    print(f"::{j}:{v}")
                 print("################")
             else:
                 print(f"{i}:{v.value}")
