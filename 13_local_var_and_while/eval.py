@@ -85,13 +85,6 @@ class Evaluator:
         self.co_stack.push(exec_array=ex_arr, pc=0)
 
         while not self.co_stack.is_empty():
-            # is_cont, cont_or_val = self.co_stack.pop()
-            # try:
-            #     while not is_cont:
-            #         is_cont, cont_or_val = self.co_stack.pop()
-            #     exec_array, pc = cont_or_val
-            # except IndexError:
-            #     break
             exec_array, pc = self.co_stack.pop()
 
             while pc < len(exec_array):
@@ -342,7 +335,6 @@ def register_compile_primitives(dict_):
 def main():
     evaluator = Evaluator()
     input_ = "{{1 {1} repeat} exec} exec"
-
     elems = to_elems(to_char_gen(input_))
     evaluator.eval(elems)
     evaluator.stack.debug_print()
