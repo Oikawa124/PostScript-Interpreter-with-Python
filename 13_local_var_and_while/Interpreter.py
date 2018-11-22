@@ -5,12 +5,11 @@ from eval import *
 
 
 def main():
-    with open("test.ps") as f:
-        s = f.read()
-        evaluator = Evaluator()
-        elems = to_elems(to_char_gen(s))
-        evaluator.eval(elems)
-        print(evaluator.stack)
+    it = (x for x in open("test.ps"))
+    evaluator = Evaluator()
+    elems = to_elems(to_char_gen(it))
+    evaluator.eval(elems)
+    print(evaluator.stack)
 
 
 if __name__ == '__main__':

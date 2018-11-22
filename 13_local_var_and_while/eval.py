@@ -11,8 +11,11 @@ from stack import Stack
 from continuation import *
 
 
-def to_char_gen(input_): return (x for x in input_)
-
+def to_char_gen(input_):
+    if hasattr(input_, "__iter__"):
+        return (x for g in input_ for x in g)
+    else:
+        return (x for x in input_)
 
 class Evaluator:
     def __init__(self):
