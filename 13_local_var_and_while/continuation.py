@@ -9,12 +9,11 @@ class CoStack:
     def push(self, exec_array, pc):
         self.stack.append((True, (exec_array, pc)))
 
-    def pop(self):
+    def pop_till_next_ex_arr(self):
         try:
             is_cont, cont_or_val = self.stack.pop()
             while not is_cont:
                 if self.is_empty():
-                    print(self.stack)
                     return ([], 0)
                 is_cont, cont_or_val = self.stack.pop()
             return cont_or_val

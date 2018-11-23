@@ -88,7 +88,7 @@ class Evaluator:
         self.co_stack.push(exec_array=ex_arr, pc=0)
 
         while not self.co_stack.is_empty():
-            exec_array, pc = self.co_stack.pop()
+            exec_array, pc = self.co_stack.pop_till_next_ex_arr()
 
             while pc < len(exec_array):
                 if exec_array[pc].etype in {Etype.NUMBER, Etype.LITERAL_NAME, Etype.EXECUTABLE_ARRAY}:
